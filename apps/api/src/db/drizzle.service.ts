@@ -1,7 +1,7 @@
 import * as schema from "./schema/index.js";
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { drizzle } from "drizzle-orm/singlestore/driver";
+import { drizzle } from "drizzle-orm/neon-http";
 
 @Injectable()
 export class DrizzleService implements OnModuleInit {
