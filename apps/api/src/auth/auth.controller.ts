@@ -16,8 +16,8 @@ import { RegisterDto } from "./dto/register.dto.js";
 import type { Request, Response } from "express";
 import { LoginDto } from "./dto/login.dto.js";
 import { COOKIE_KEYS } from "@square-base-db/constants";
-import { JwtAuthGuard } from "./jwt-auth.guard.js";
-import { CurrentUser } from "./current-user.decorator.js";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard.js";
+import { CurrentUser } from "./decorators/current-user.decorator.js";
 import type { JwtPayload } from "@square-base-db/types";
 
 @Controller("auth")
