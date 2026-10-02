@@ -19,12 +19,14 @@ import { COOKIE_KEYS } from "@square-base-db/constants";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard.js";
 import { CurrentUser } from "./decorators/current-user.decorator.js";
 import type { JwtPayload } from "@square-base-db/types";
+import { InviteService } from "../members/invite.service.js";
 
 @Controller("auth")
 export class AuthController {
   constructor(
     private authService: AuthService,
     private configService: ConfigService,
+    private inviteService: InviteService,
   ) {}
 
   // Endpoint for user registration
@@ -139,5 +141,17 @@ export class AuthController {
     return res.redirect(
       `${this.configService.get<string>("WEB_URL")}/dashboard`,
     );
+  }
+
+  // Endpoint for accepting an invitation to join an organization
+  // This endpoint verifies the invite token, creates a new user if they don't exist,
+  // and adds them as a member of the organization with the role of "developer".
+  // If the user is already a member, it returns a message indicating that they are already a member.
+  @Get("invite/accept")
+  async acceptInvite(@Query("token") token: string, @Res() res: Response) {
+    await this.inviteService.acceptInvite(token);
+
+    // Redirect the user to the dashboard page after successfully accepting the invite
+    return res.redirect(`${this.configService.get("WEB_URL")}/dashboard`);
   }
 }
