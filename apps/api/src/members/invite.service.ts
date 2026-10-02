@@ -75,7 +75,7 @@ export class InviteService {
       {
         // Use a secret from the environment variables to sign the token
         secret: this.configService.get("INVITE_SECRET"),
-        expiresIn: Number(INVITE_EXPIRES_IN),
+        expiresIn: INVITE_EXPIRES_IN,
       },
     );
 
