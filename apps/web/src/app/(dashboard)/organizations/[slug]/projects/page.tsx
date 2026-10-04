@@ -71,13 +71,13 @@ export default async function ProjectsPage({
                 </div>
               </div>
 
-              <div
-                className="flex items-center justify-between text-xs text-muted-foreground border-t border-border/60 pt-3">
-                <span>Active</span>
-                <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                  PostgreSQL
-                </span>
-              </div>
+              {/*<div*/}
+              {/*  className="flex items-center justify-between text-xs text-muted-foreground border-t border-border/60 pt-3">*/}
+              {/*  <span>Active</span>*/}
+              {/*  /!*<span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">*!/*/}
+              {/*  /!*  PostgreSQL*!/*/}
+              {/*  /!*</span>*!/*/}
+              {/*</div>*/}
             </Link>
           ))}
         </div>

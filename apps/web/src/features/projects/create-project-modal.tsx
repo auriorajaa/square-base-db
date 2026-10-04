@@ -39,6 +39,7 @@ export function CreateProjectModal({slug}: CreateProjectModalProps) {
   // Safe side-effect to close modal and reset form on action success
   useEffect(() => {
     if (state.success && open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOpen(false);
       form.reset();
     }
