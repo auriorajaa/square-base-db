@@ -14,3 +14,14 @@ export const PROJECT_KEY_ROLES = {
   ANON: "anon",
   SERVICE_ROLE: "service_role",
 } as const;
+
+export const COLUMN_TYPES = [
+  "text",
+  "integer",
+  "bigint",
+  "boolean",
+  "timestamp",
+  "uuid",
+  "jsonb",
+  "numeric",
+] as const;
