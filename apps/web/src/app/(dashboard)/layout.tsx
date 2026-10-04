@@ -1,6 +1,5 @@
 import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import {AppSidebar} from "@/components/app-sidebar";
-import {TopNav} from "@/components/top-nav";
 import {retrieveTokenFromCookie} from "@/server-utils/utils";
 import {retrieveMyOrganizationsFromApi} from "@/features/organization/organization-helpers.server";
 
@@ -27,8 +26,7 @@ export default async function DashboardLayout({children,}: {
     <SidebarProvider>
       <AppSidebar orgs={orgs} user={user}/>
       <SidebarInset>
-        <TopNav/>
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        {children}
       </SidebarInset>
     </SidebarProvider>
   );
