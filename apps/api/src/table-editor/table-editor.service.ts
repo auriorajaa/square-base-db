@@ -262,6 +262,24 @@ export class TableEditorService {
   }
 
   /**
+   * Checks if an error is due to a missing table.
+   * This is useful for handling cases where a table is expected but doesn't exist.
+   */
+  private isMissingTableError(err: unknown): boolean {
+    const code =
+      err &&
+      typeof err === "object" &&
+      "cause" in err &&
+      err.cause &&
+      typeof err.cause === "object" &&
+      "code" in err.cause
+        ? String(err.cause.code)
+        : null;
+
+    return code === "42P01"; // PostgreSQL error code for "undefined table"
+  }
+
+  /**
    * Fetches rows from a table with pagination + total count.
    * Runs both queries in parallel for better performance.
    */
@@ -279,33 +297,43 @@ export class TableEditorService {
     // This ensures we query the correct schema in PostgreSQL.
     const schema = await this.getProjectSchema(orgSlug, projectSlug);
 
-    // Run data query + count query at the same time
-    const [rowsResult, countResult] = await Promise.all([
-      // Get the actual rows
-      this.drizzle.db.execute<Record<string, unknown>>(
-        sql`
+    try {
+      // Run data query + count query at the same time
+      const [rowsResult, countResult] = await Promise.all([
+        // Get the actual rows
+        this.drizzle.db.execute<Record<string, unknown>>(
+          sql`
           SELECT *
           FROM ${sql.identifier(schema)}.${sql.identifier(tableName)}
                  LIMIT ${limit}
           OFFSET ${offset}
         `,
-      ),
+        ),
 
-      // Get total number of rows (for pagination UI)
-      this.drizzle.db.execute<{ count: string }>(
-        sql`
+        // Get total number of rows (for pagination UI)
+        this.drizzle.db.execute<{ count: string }>(
+          sql`
           SELECT COUNT(*)::text AS count
           FROM ${sql.identifier(schema)}.${sql.identifier(tableName)}
         `,
-      ),
-    ]);
+        ),
+      ]);
 
-    // Return both the rows and the total count as a single object
-    // Note: we parse the count from string to number for easier usage in the frontend.
-    return {
-      rows: rowsResult.rows,
-      count: parseInt(countResult.rows[0]?.count ?? "0", 10),
-    };
+      // Return both the rows and the total count as a single object
+      // Note: we parse the count from string to number for easier usage in the frontend.
+      return {
+        rows: rowsResult.rows,
+        count: parseInt(countResult.rows[0]?.count ?? "0", 10),
+      };
+    } catch (err) {
+      // If the error is due to a missing table, throw a NotFoundException with a clear message.
+      if (this.isMissingTableError(err)) {
+        throw new NotFoundException(
+          `Table not found: ${tableName} in project: ${projectSlug}, org: ${orgSlug}`,
+        );
+      }
+      throw err;
+    }
   }
 
   /**

@@ -25,3 +25,12 @@ export const COLUMN_TYPES = [
   "jsonb",
   "numeric",
 ] as const;
+
+export const TABLE_EDITOR_INTENT = {
+  CREATE_TABLE: "CREATE_TABLE",
+  DELETE_TABLE: "DELETE_TABLE",
+  FETCH_TABLE: "FETCH_TABLE",
+  ADD_COLUMN: "ADD_COLUMN",
+} as const;
+
+export type TableEditorIntent = (typeof TABLE_EDITOR_INTENT)[keyof typeof TABLE_EDITOR_INTENT];
