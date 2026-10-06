@@ -14,3 +14,44 @@ export const PROJECT_KEY_ROLES = {
   ANON: "anon",
   SERVICE_ROLE: "service_role",
 } as const;
+
+export const COLUMN_TYPES = [
+  "text",
+  "integer",
+  "bigint",
+  "boolean",
+  "timestamp",
+  "uuid",
+  "jsonb",
+  "numeric",
+] as const;
+
+export const TABLE_EDITOR_INTENT = {
+  CREATE_TABLE: "CREATE_TABLE",
+  DELETE_TABLE: "DELETE_TABLE",
+  FETCH_TABLE: "FETCH_TABLE",
+  ADD_COLUMN: "ADD_COLUMN",
+} as const;
+
+export type TableEditorIntent = (typeof TABLE_EDITOR_INTENT)[keyof typeof TABLE_EDITOR_INTENT];
+
+export const RESERVED_QUERY_PARAMS = new Set([
+  "select",
+  "order",
+  "limit",
+  "offset",
+]);
+
+export const FILTER_OPERATORS = {
+  eq: "=",
+  neq: "!=",
+  gt: ">",
+  gte: ">=",
+  lt: "<",
+  lte: "<=",
+  like: "LIKE",
+  ilike: "ILIKE",
+  in: "IN",
+} as const;
+
+export type FilterOperator = keyof typeof FILTER_OPERATORS;

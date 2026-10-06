@@ -33,6 +33,7 @@ export interface Project {
   dbSchema: string;
   projectUrl: string;
   anonKey: string;
+  serviceRoleKey: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -94,4 +95,69 @@ export interface CreateProjectInput {
 
 export interface ProjectWithOrg extends Project {
   org: Pick<Organization, "id" | "name" | "slug">;
+}
+
+export type ColumnType =
+  | "text"
+  | "integer"
+  | "bigint"
+  | "boolean"
+  | "timestamp"
+  | "uuid"
+  | "jsonb"
+  | "numeric";
+
+export interface TableColumn {
+  name: string;
+  type: ColumnType;
+  isNullable: boolean;
+  isPrimaryKey: boolean;
+  defaultValue: string | null;
+  foreignKey: {
+    table: string;
+    column: string;
+  } | null;
+}
+
+export interface TableInfo {
+  name: string;
+  columns: TableColumn[];
+}
+
+export interface CreateColumnInput {
+  name: string;
+  type: ColumnType;
+  isNullable: boolean;
+  isPrimaryKey: boolean;
+  defaultValue?: string;
+  foreignKeyTable?: string;
+  foreignKeyColumn?: string;
+}
+
+export interface CreateTableInput {
+  name: string;
+  columns: CreateColumnInput[];
+}
+
+export interface ProjectApiEndpoint {
+  method: "GET" | "POST" | "PATCH" | "DELETE";
+  path: string;
+  description: string;
+  example: string;
+}
+
+export interface ProjectApiDocs {
+  projectUrl: string;
+  anonKey: string;
+  serviceRoleKey: string;
+  tables: {
+    name: string;
+    endpoints: ProjectApiEndpoint[]
+  }[];
+}
+
+export interface ProjectBySlugResponse {
+  projects: Project;
+  organizations: Organization;
+  org_members: OrgMember;
 }
