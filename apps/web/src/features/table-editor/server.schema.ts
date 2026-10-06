@@ -27,8 +27,14 @@ export const tableEditorServerSchema = z.discriminatedUnion("intent", [
           // Return z.NEVER to indicate that the validation failed
           return z.NEVER;
         }
+
+        // Return the validated columns data
+        return result.data;
       } catch {
-        ctx.addIssue({code: "custom", message: "Invalid JSON format for columns"});
+        ctx.addIssue({
+          code: "custom",
+          message: "Invalid JSON format for columns"
+        });
 
         // Return z.NEVER to indicate that the validation failed
         return z.NEVER;

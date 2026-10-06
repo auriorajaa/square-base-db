@@ -379,7 +379,7 @@ export class TableEditorService {
       const parts: string[] = [];
 
       // Base: "column_name" TYPE
-      let colDef = `${sql.identifier(col.name)} ${this.mapType(col.type)}`;
+      let colDef = `"${col.name}" ${this.mapType(col.type)}`;
 
       // Auto-increment for single bigint primary key (PostgreSQL IDENTITY)
       if (col.isPrimaryKey && col.type === "bigint" && !col.defaultValue) {
@@ -477,7 +477,7 @@ export class TableEditorService {
     // Build: "column_name" TYPE [DEFAULT ...]
     // Note: we don't handle NOT NULL or PRIMARY KEY here, as ALTER TABLE ADD COLUMN
     // doesn't allow adding a NOT NULL column without a default value.
-    let colDef = `${sql.identifier(dto.name)} ${this.mapType(dto.type)}`;
+    let colDef = `"${dto.name}" ${this.mapType(dto.type)}`;
 
     // Add default value if provided
     if (dto.defaultValue) {
