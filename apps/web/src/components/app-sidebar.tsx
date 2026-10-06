@@ -15,6 +15,7 @@ import {
   Settings,
   ShieldCheck,
   Table2,
+  TerminalIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -28,6 +29,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -42,14 +44,65 @@ import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import {signOut} from "@/features/auth/sign-out";
 import {OrganizationWithMeta} from "@square-base-db/types";
 
-const navItems = [
-  {icon: Home, label: "Home", segment: "projects"},
+// ── Org-level nav (only Home) ───────────────────────────────────────────────
+const orgNavItem = {icon: Home, label: "Home", segment: "projects"} as const;
+
+// ── Project-level nav ───────────────────────────────────────────────────────
+const projectNavItems = [
   {icon: Table2, label: "Database", segment: "database"},
+  {icon: TerminalIcon, label: "SQL", segment: "sql"},
   {icon: ShieldCheck, label: "Auth", segment: "auth"},
   {icon: FolderOpen, label: "Storage", segment: "storage"},
   {icon: Code2, label: "API", segment: "api"},
   {icon: Radio, label: "Realtime", segment: "realtime"},
-];
+] as const;
+
+/**
+ * Builds the correct href depending on scope.
+ * - org scope  → /organizations/:orgSlug/projects
+ * - project scope → /organizations/:orgSlug/:projectSlug/:segment
+ */
+function buildNavHref(
+  orgSlug: string | undefined,
+  projectSlug: string | undefined,
+  segment: string,
+  scope: "org" | "project",
+): string {
+  if (!orgSlug) return "/organizations";
+
+  if (scope === "org") {
+    return `/organizations/${orgSlug}/projects`;
+  }
+
+  if (projectSlug) {
+    return `/organizations/${orgSlug}/${projectSlug}/${segment}`;
+  }
+
+  // Fallback when no project is selected yet
+  return `/organizations/${orgSlug}/projects`;
+}
+
+/**
+ * Checks if a nav item should look active.
+ */
+function isNavItemActive(
+  pathname: string,
+  orgSlug: string | undefined,
+  projectSlug: string | undefined,
+  segment: string,
+  scope: "org" | "project",
+): boolean {
+  if (!orgSlug) return false;
+
+  if (scope === "org") {
+    return pathname === `/organizations/${orgSlug}/projects`;
+  }
+
+  if (!projectSlug) return false;
+
+  const base = `/organizations/${orgSlug}/${projectSlug}/${segment}`;
+  return pathname === base || pathname.startsWith(`${base}/`);
+}
 
 interface AppSidebarProps {
   orgs: OrganizationWithMeta[];
@@ -58,8 +111,21 @@ interface AppSidebarProps {
 
 export function AppSidebar({orgs, user}: AppSidebarProps) {
   const pathname = usePathname();
-  const params = useParams<{ slug: string }>();
+  // Support both org slug and optional project slug
+  const params = useParams<{ slug: string; projectSlug?: string }>();
+
   const currentOrg = orgs.find((org) => org.slug === params?.slug) ?? orgs[0];
+  const orgSlug = params?.slug;
+  const projectSlug = params?.projectSlug;
+
+  const homeHref = buildNavHref(orgSlug, projectSlug, orgNavItem.segment, "org");
+  const isHomeActive = isNavItemActive(
+    pathname,
+    orgSlug,
+    projectSlug,
+    orgNavItem.segment,
+    "org",
+  );
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border bg-sidebar">
@@ -68,7 +134,6 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              {/* nativeButton={true} because SidebarMenuButton renders a native button */}
               <DropdownMenuTrigger
                 nativeButton={true}
                 render={
@@ -80,15 +145,19 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
                       className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold">
                       <Building2 className="size-4"/>
                     </div>
-                    <div className="grid flex-1 text-left text-sm leading-tight truncate">
-                      <span className="truncate font-semibold text-sidebar-foreground">
+                    <div
+                      className="grid flex-1 text-left text-sm leading-tight truncate">
+                      <span
+                        className="truncate font-semibold text-sidebar-foreground">
                         {currentOrg?.name ?? "Select Org"}
                       </span>
-                      <span className="truncate text-xs text-muted-foreground capitalize">
+                      <span
+                        className="truncate text-xs text-muted-foreground capitalize">
                         {currentOrg?.role ?? "Member"}
                       </span>
                     </div>
-                    <ChevronsUpDown className="ml-auto size-4 text-muted-foreground"/>
+                    <ChevronsUpDown
+                      className="ml-auto size-4 text-muted-foreground"/>
                   </SidebarMenuButton>
                 }
               />
@@ -99,7 +168,8 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
                 sideOffset={4}
               >
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+                  <DropdownMenuLabel
+                    className="text-xs font-semibold text-muted-foreground">
                     Organizations
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
@@ -116,7 +186,9 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
                           className="flex items-center justify-between w-full cursor-pointer"
                         >
                           <span className="truncate">{org.name}</span>
-                          {isSelected && <Check className="ml-auto size-4 text-primary"/>}
+                          {isSelected && (
+                            <Check className="ml-auto size-4 text-primary"/>
+                          )}
                         </Link>
                       }
                     />
@@ -128,7 +200,10 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
                 <DropdownMenuItem
                   nativeButton={false}
                   render={
-                    <Link href="/organizations" className="flex items-center gap-2 w-full cursor-pointer">
+                    <Link
+                      href="/organizations"
+                      className="flex items-center gap-2 w-full cursor-pointer"
+                    >
                       <span>All organizations</span>
                     </Link>
                   }
@@ -154,18 +229,48 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
       {/* ── Content — Navigation Menu ─────────────────────────────── */}
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase font-medium text-muted-foreground tracking-wider px-2">
+          <SidebarGroupLabel
+            className="text-xs uppercase font-medium text-muted-foreground tracking-wider px-2">
             Platform
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map(({icon: Icon, label, segment}) => {
-                const href = params?.slug
-                  ? `/organizations/${params.slug}/${segment}`
-                  : "/organizations";
+              {/* Home (org-level) */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={isHomeActive}
+                  tooltip={orgNavItem.label}
+                  {...({} as { nativebutton: "false" })}
+                  render={
+                    <Link href={homeHref} className="flex items-center gap-3">
+                      <orgNavItem.icon className="size-4"/>
+                      <span className="font-medium text-sm">
+                        {orgNavItem.label}
+                      </span>
+                    </Link>
+                  }
+                />
+              </SidebarMenuItem>
 
-                // Determine if the current route is active based on the pathname and the href
-                const isActive = Boolean(params?.slug) && pathname.startsWith(href);
+              {/* Separator between org-level and project-level nav */}
+              <SidebarSeparator
+                className="my-2 group-data-[collapsible=icon]:hidden"/>
+
+              {/* Project-level items */}
+              {projectNavItems.map(({icon: Icon, label, segment}) => {
+                const href = buildNavHref(
+                  orgSlug,
+                  projectSlug,
+                  segment,
+                  "project",
+                );
+                const isActive = isNavItemActive(
+                  pathname,
+                  orgSlug,
+                  projectSlug,
+                  segment,
+                  "project",
+                );
 
                 return (
                   <SidebarMenuItem key={label}>
@@ -187,12 +292,12 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       {/* ── Footer — User Settings & Profile ──────────────────────── */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              {/* nativeButton={true} because SidebarMenuButton renders a native button */}
               <DropdownMenuTrigger
                 nativeButton={true}
                 render={
@@ -201,19 +306,23 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
                     <Avatar className="size-8 rounded-lg border border-border">
-                      <AvatarFallback className="rounded-lg bg-muted text-foreground font-semibold text-xs">
+                      <AvatarFallback
+                        className="rounded-lg bg-muted text-foreground font-semibold text-xs">
                         {(user.name ?? user.email).charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight truncate">
-                      <span className="truncate font-semibold text-sidebar-foreground">
+                    <div
+                      className="grid flex-1 text-left text-sm leading-tight truncate">
+                      <span
+                        className="truncate font-semibold text-sidebar-foreground">
                         {user.name ?? "Account"}
                       </span>
                       <span className="truncate text-xs text-muted-foreground">
                         {user.email}
                       </span>
                     </div>
-                    <ChevronsUpDown className="ml-auto size-4 text-muted-foreground"/>
+                    <ChevronsUpDown
+                      className="ml-auto size-4 text-muted-foreground"/>
                   </SidebarMenuButton>
                 }
               />
@@ -225,15 +334,24 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
               >
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="p-0 font-normal">
-                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                      <Avatar className="size-8 rounded-lg border border-border">
-                        <AvatarFallback className="rounded-lg bg-muted text-foreground font-semibold text-xs">
+                    <div
+                      className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <Avatar
+                        className="size-8 rounded-lg border border-border">
+                        <AvatarFallback
+                          className="rounded-lg bg-muted text-foreground font-semibold text-xs">
                           {(user.name ?? user.email).charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="grid flex-1 text-left text-sm leading-tight truncate">
-                        <span className="truncate font-semibold">{user.name ?? "Account"}</span>
-                        <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+                      <div
+                        className="grid flex-1 text-left text-sm leading-tight truncate">
+                        <span className="truncate font-semibold">
+                          {user.name ?? "Account"}
+                        </span>
+                        <span
+                          className="truncate text-xs text-muted-foreground">
+                          {user.email}
+                        </span>
                       </div>
                     </div>
                   </DropdownMenuLabel>
@@ -244,7 +362,10 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
                 <DropdownMenuItem
                   nativeButton={false}
                   render={
-                    <Link href="/settings" className="flex items-center gap-2 w-full cursor-pointer">
+                    <Link
+                      href={`/organizations/${orgSlug ?? currentOrg?.slug}/settings/members`}
+                      className="flex items-center gap-2 w-full cursor-pointer"
+                    >
                       <Settings className="size-4"/>
                       <span>Settings</span>
                     </Link>
@@ -273,6 +394,7 @@ export function AppSidebar({orgs, user}: AppSidebarProps) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
       <SidebarRail/>
     </Sidebar>
   );
