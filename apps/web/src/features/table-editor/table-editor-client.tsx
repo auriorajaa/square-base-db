@@ -12,20 +12,11 @@ import {
   tableFeatures,
   useTable,
 } from "@tanstack/react-table";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+import {ResizableHandle, ResizablePanel, ResizablePanelGroup,} from "@/components/ui/resizable";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import {Sheet, SheetContent, SheetHeader, SheetTitle,} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,23 +24,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  ChevronLeft,
-  Expand,
-  MoreVertical,
-  Plus,
-  Search,
-  Table2,
-  X,
-} from "lucide-react";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
+import {ChevronLeft, Expand, MoreVertical, Plus, Search, Table2, X,} from "lucide-react";
 import {cn} from "@/lib/utils";
 import type {TableInfo} from "@square-base-db/types";
 import {tableEditorAction} from "@/features/table-editor/action";
@@ -256,7 +232,7 @@ export function TableEditorClient({
       onOpenTable={openTable}
       onNewTable={() => setCreateDrawerOpen(true)}
       onDeleteTable={deleteTable}
-      className="md:border-r md:border-border"
+      className="lg:border-r lg:border-border"
     />
   );
 
@@ -294,13 +270,13 @@ export function TableEditorClient({
   return (
     <div
       className="flex h-full min-h-0 w-full flex-1 overflow-hidden bg-background">
-      {/* Mobile: full-width list OR table view */}
-      <div className="flex h-full min-h-0 w-full flex-col md:hidden">
+      {/* Mobile + tablet: full-width list OR table view */}
+      <div className="flex h-full min-h-0 w-full flex-col lg:hidden">
         {activeTab ? mobileMainPanel : listPanel}
       </div>
 
-      {/* Desktop: resizable split pane */}
-      <div className="hidden h-full min-h-0 w-full md:flex">
+      {/* Desktop only: resizable split pane */}
+      <div className="hidden h-full min-h-0 w-full lg:flex">
         <ResizablePanelGroup
           orientation="horizontal"
           className="h-full w-full min-h-0"
@@ -560,7 +536,7 @@ function EditorMainPanel({
             onClick={() => onSelectTab(tab.tableName)}
           >
             <Table2 className="size-3.5"/>
-            <span className="max-w-32 truncate sm:max-w-none">
+            <span className="max-w-32 truncate">
               {tab.tableName}
             </span>
             <button
