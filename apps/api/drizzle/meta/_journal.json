@@ -15,6 +15,13 @@
       "when": 1790659166787,
       "tag": "0001_legal_maria_hill",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791365517415,
+      "tag": "0002_aberrant_stepford_cuckoos",
+      "breakpoints": true
     }
   ]
 }
