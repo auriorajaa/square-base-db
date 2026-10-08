@@ -167,6 +167,7 @@ export interface QueryResult {
   columns: string[];
   rowCount: number;
   executionTimeMs: number;
+  command?: string;
 }
 
 export interface QueryHistoryItem {

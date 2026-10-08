@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { projects } from "./projects.js";
 
 export const queryHistory = pgTable("query_history", {
@@ -7,6 +7,8 @@ export const queryHistory = pgTable("query_history", {
     .notNull()
     .references(() => projects.id, { onDelete: "cascade" }),
   sql: text("sql").notNull(),
+  executionTimeMs: integer("execution_time_ms").notNull(),
+  rowCount: integer("row_count").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
