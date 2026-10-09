@@ -9,6 +9,7 @@ import { MembersModule } from "./members/members.module.js";
 import { ProjectsModule } from "./projects/projects.module.js";
 import { TableEditorModule } from "./table-editor/table-editor.module.js";
 import { ProjectApiModule } from "./project-api/project-api.module.js";
+import { SqlEditorModule } from "./sql-editor/sql-editor.module.js";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProjectApiModule } from "./project-api/project-api.module.js";
     ProjectsModule,
     TableEditorModule,
     ProjectApiModule,
+    SqlEditorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

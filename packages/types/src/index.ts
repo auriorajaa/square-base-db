@@ -161,3 +161,20 @@ export interface ProjectBySlugResponse {
   organizations: Organization;
   org_members: OrgMember;
 }
+
+export interface QueryResult {
+  rows: Record<string, unknown>[];
+  columns: string[];
+  rowCount: number;
+  executionTimeMs: number;
+  command?: string;
+}
+
+export interface QueryHistoryItem {
+  id: string;
+  projectId: string;
+  sql: string;
+  executionTimeMs: number;
+  rowCount: number;
+  createdAt: string;
+}

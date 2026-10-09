@@ -15,7 +15,7 @@ import {
   Settings,
   ShieldCheck,
   Table2,
-  TerminalIcon,
+  TerminalSquare,
 } from "lucide-react";
 import {
   Sidebar,
@@ -50,7 +50,7 @@ const orgNavItem = {icon: Home, label: "Home", segment: "projects"} as const;
 // ── Project-level nav ───────────────────────────────────────────────────────
 const projectNavItems = [
   {icon: Table2, label: "Database", segment: "database"},
-  {icon: TerminalIcon, label: "SQL", segment: "sql"},
+  {icon: TerminalSquare, label: "SQL (Query)", segment: "sql"},
   {icon: ShieldCheck, label: "Auth", segment: "auth"},
   {icon: FolderOpen, label: "Storage", segment: "storage"},
   {icon: Code2, label: "API", segment: "api"},
