@@ -178,3 +178,14 @@ export interface QueryHistoryItem {
   rowCount: number;
   createdAt: string;
 }
+
+export type RealtimeEventType = "INSERT" | "UPDATE" | "DELETE";
+
+export interface RealtimeEvent {
+  type: RealtimeEventType;
+  table: string;
+  record: Record<string, unknown>;
+  oldRecord?: Record<string, unknown>; // For UPDATE and DELETE events, the old record is included
+  projectId: string;
+  timestamp: string;
+}
