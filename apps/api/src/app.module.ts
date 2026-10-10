@@ -10,6 +10,7 @@ import { ProjectsModule } from "./projects/projects.module.js";
 import { TableEditorModule } from "./table-editor/table-editor.module.js";
 import { ProjectApiModule } from "./project-api/project-api.module.js";
 import { SqlEditorModule } from "./sql-editor/sql-editor.module.js";
+import { RealtimeModule } from "./realtime/realtime.module.js";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SqlEditorModule } from "./sql-editor/sql-editor.module.js";
     TableEditorModule,
     ProjectApiModule,
     SqlEditorModule,
+    RealtimeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

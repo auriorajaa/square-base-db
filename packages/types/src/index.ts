@@ -178,3 +178,40 @@ export interface QueryHistoryItem {
   rowCount: number;
   createdAt: string;
 }
+
+export type RealtimeEventType = "INSERT" | "UPDATE" | "DELETE";
+
+export interface RealtimeEvent {
+  type: RealtimeEventType;
+  table: string;
+  record: Record<string, unknown>;
+  oldRecord?: Record<string, unknown>; // For UPDATE and DELETE events, the old record is included
+  projectId: string;
+  timestamp: string;
+}
+
+export type BucketAccess = "public" | "private";
+
+export interface StorageBucket {
+  id: string;
+  projectId: string;
+  name: string;
+  access: BucketAccess;
+  createdAt: string;
+}
+
+export interface StorageObject {
+  id: string;
+  bucketId: string;
+  name: string;
+  size: number;
+  mimeType: string;
+  utKey: string; // Unique key for the object in the bucket - used for generating signed URLs
+  url: string; // URL to access the object (if public)
+  createdAt: string;
+}
+
+export interface CreateBucketInput {
+  name: string;
+  access: BucketAccess;
+}
