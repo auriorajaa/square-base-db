@@ -137,7 +137,9 @@ export class TriggerService {
     await this.drizzle.db.execute(`
       DROP TRIGGER IF EXISTS "${tableName}_realtime_trigger"
       ON "${dbSchema}"."${tableName}";
+    `);
 
+    await this.drizzle.db.execute(`
       CREATE TRIGGER "${tableName}_realtime_trigger"
       AFTER INSERT OR UPDATE OR DELETE
       ON "${dbSchema}"."${tableName}"

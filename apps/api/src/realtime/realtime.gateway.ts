@@ -14,6 +14,7 @@ import { ConfigService } from "@nestjs/config";
 import { PROJECT_KEY_ROLES, REALTIME_EVENTS } from "@square-base-db/constants";
 import { ProjectKeyPayload } from "../project-api/project-key.guard.js";
 import { RealtimeService } from "./realtime.service.js";
+import type { RealtimeSocket } from "./realtime-socket.types.js";
 
 type SocketCallbackEntry = {
   projectId: string;
@@ -48,7 +49,7 @@ export class RealtimeGateway
   ) {}
 
   // Handle a new client connection to the WebSocket gateway.
-  async handleConnection(client: Socket) {
+  async handleConnection(client: RealtimeSocket) {
     // Get the token from the client's handshake authentication data.
     const token = client.handshake.auth["token"] as string | undefined;
 
@@ -106,11 +107,11 @@ export class RealtimeGateway
   // and sets up a callback to emit events to the client.
   @SubscribeMessage(REALTIME_EVENTS.SUBSCRIBE)
   async handleSubscribe(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: RealtimeSocket,
     @MessageBody() tableName: string,
   ) {
     // Retrieve the projectId from the client's data. If it's missing or the tableName is empty, return early.
-    const projectId = client.data.projectId as string | undefined;
+    const projectId = client.data.projectId;
     if (!projectId || !tableName.trim()) return;
 
     // Normalize the table name by trimming whitespace and construct a room name for the project and table.
@@ -156,11 +157,11 @@ export class RealtimeGateway
   // The client sends a message with the table name they want to unsubscribe from.
   @SubscribeMessage(REALTIME_EVENTS.UNSUBSCRIBE)
   async handleUnsubscribe(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: RealtimeSocket,
     @MessageBody() tableName: string,
   ) {
     // Retrieve the projectId from the client's data. If it's missing or the tableName is empty, return early.
-    const projectId = client.data.projectId as string | undefined;
+    const projectId = client.data.projectId;
     if (!projectId || !tableName?.trim()) return;
 
     // Normalize the table name by trimming whitespace and construct a room name for the project and table.

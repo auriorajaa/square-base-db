@@ -1,8 +1,10 @@
 import type { RealtimeEvent } from "@square-base-db/types";
 import { Injectable, OnModuleDestroy } from "@nestjs/common";
-import { Client } from "pg";
+import { Client, neonConfig } from "@neondatabase/serverless";
 import { ConfigService } from "@nestjs/config";
 import { TriggerService } from "./trigger.service.js";
+
+neonConfig.webSocketConstructor = WebSocket;
 
 type NotifyCallback = (event: RealtimeEvent) => void;
 
@@ -22,21 +24,27 @@ export class RealtimeService implements OnModuleDestroy {
   // The constructor injects the ConfigService to access environment variables.
   constructor(private configService: ConfigService) {}
 
-  // Get the connection string for the Postgres database, removing the "-pooler" suffix if present.
+  // Get the connection string for listening to real-time notifications.
   private getListenConnectionString(): string {
-    // Get the database URL from environment variables.
-    // Prefer REALTIME_DATABASE_URL if set, otherwise fall back to DATABASE_URL.
-    const url =
-      this.configService.get<string>("REALTIME_DATABASE_URL") ??
-      this.configService.get<string>("DATABASE_URL");
+    const realtime = this.configService.get<string>("REALTIME_DATABASE_URL");
+    const database = this.configService.get<string>("DATABASE_URL");
+    // Use the REALTIME_DATABASE_URL if available, otherwise fall back to DATABASE_URL.
+    const url = realtime ?? database;
 
-    // If the database URL is not configured, throw an error.
+    // If neither URL is available, throw an error indicating that the database URL is missing.
     if (!url) {
-      throw new Error("Database URL is not configured");
+      throw new Error("Missing database URL in environment variables");
     }
 
-    // Remove "-pooler" from the URL for LISTEN/NOTIFY, as it may not be compatible with the connection.
-    return url.replace("-pooler", ""); // Remove "-pooler" for LISTEN/NOTIFY
+    // Clean the URL by removing any "-pooler" suffix and unnecessary query parameters.
+    let clean = url.replace("-pooler", "").trim();
+    // Remove sslmode and channel_binding query parameters from the URL.
+    clean = clean.replace(/([?&])(sslmode|channel_binding)=[^&]+/g, "$1");
+    // Remove any trailing '?' or '&' characters from the URL.
+    clean = clean.replace(/[?&]$/, "").replace(/\?&/, "?");
+
+    // Return the cleaned connection string to be used for connecting to the Postgres database.
+    return clean;
   }
 
   // Subscribe to real-time notifications for a specific table in a project.
