@@ -75,21 +75,13 @@ export class StorageController {
   }
 
   @Delete("buckets/:bucketId")
-  deleteBucket(
-    @Param("slug") slug: string,
-    @Param("projectSlug") projectSlug: string,
-    @Param("bucketId") bucketId: string,
-  ) {
-    return this.storageService.deleteBucket(slug, projectSlug, bucketId);
+  deleteBucket(@Param("bucketId") bucketId: string) {
+    return this.storageService.deleteBucket(bucketId);
   }
 
   @Get("buckets/:bucketId/objects")
-  getObjects(
-    @Param("slug") slug: string,
-    @Param("projectSlug") projectSlug: string,
-    @Param("bucketId") bucketId: string,
-  ) {
-    return this.storageService.getObjects(slug, projectSlug, bucketId);
+  getObjects(@Param("bucketId") bucketId: string) {
+    return this.storageService.getObjects(bucketId);
   }
 
   @All("buckets/:bucketId/upload")
@@ -123,33 +115,18 @@ export class StorageController {
     });
   }
 
-  // The route param is :bucketId, so the handler must read "bucketId".
-  // (Reading "objectId" here returned undefined and caused "Bucket not found".)
   @Post("buckets/:bucketId/objects")
-  saveObject(
-    @Param("slug") slug: string,
-    @Param("projectSlug") projectSlug: string,
-    @Param("bucketId") bucketId: string,
-    @Body() file: SaveObjectDto,
-  ) {
-    return this.storageService.saveObjects(slug, projectSlug, bucketId, file);
+  saveObject(@Param("bucketId") bucketId: string, @Body() file: SaveObjectDto) {
+    return this.storageService.saveObject(bucketId, file);
   }
 
   @Delete("objects/:objectId")
-  deleteObject(
-    @Param("slug") slug: string,
-    @Param("projectSlug") projectSlug: string,
-    @Param("objectId") objectId: string,
-  ) {
-    return this.storageService.deleteObject(slug, projectSlug, objectId);
+  deleteObject(@Param("objectId") objectId: string) {
+    return this.storageService.deleteObject(objectId);
   }
 
   @Get("objects/:objectId/signed-url")
-  getSignedUrl(
-    @Param("slug") slug: string,
-    @Param("projectSlug") projectSlug: string,
-    @Param("objectId") objectId: string,
-  ) {
-    return this.storageService.getSignedUrl(slug, projectSlug, objectId);
+  getSignedUrl(@Param("objectId") objectId: string) {
+    return this.storageService.getSignedUrl(objectId);
   }
 }
