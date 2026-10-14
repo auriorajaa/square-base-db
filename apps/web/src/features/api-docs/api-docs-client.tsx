@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import { useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -17,13 +17,19 @@ import {
   ShieldCheck,
   Terminal,
 } from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {Badge} from "@/components/ui/badge";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
-import {cn} from "@/lib/utils";
-import type {ProjectApiDocs} from "@square-base-db/types";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import type { ProjectApiDocs } from "@square-base-db/types";
 
-export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
+export function ApiDocsClient({ docs }: { docs: ProjectApiDocs }) {
   const [showAnonKey, setShowAnonKey] = useState(false);
   const [showServiceKey, setShowServiceKey] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -40,8 +46,10 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
   const methodBadges: Record<string, string> = {
     GET: "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400",
     POST: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    PATCH: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-    DELETE: "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    PATCH:
+      "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    DELETE:
+      "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400",
   };
 
   return (
@@ -52,7 +60,8 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
           API Documentation & Reference
         </h1>
         <p className="text-sm text-muted-foreground">
-          Auto-generated RESTful endpoints, API keys, and query operators for your database tables.
+          Auto-generated RESTful endpoints, API keys, and query operators for
+          your database tables.
         </p>
       </div>
 
@@ -60,7 +69,7 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Key className="size-4 text-muted-foreground"/>
+            <Key className="size-4 text-muted-foreground" />
             <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               API Keys & Authentication
             </h2>
@@ -71,9 +80,11 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
             onClick={() => setUseRealKeysInSnippets((v) => !v)}
             className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
           >
-            <Code2 className="size-3.5 text-primary"/>
+            <Code2 className="size-3.5 text-primary" />
             <span>
-              {useRealKeysInSnippets ? "Hide real keys in examples" : "Show real keys in examples"}
+              {useRealKeysInSnippets
+                ? "Hide real keys in examples"
+                : "Show real keys in examples"}
             </span>
           </button>
         </div>
@@ -84,22 +95,29 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
             <CardHeader className="p-4 pb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="size-4 text-emerald-500"/>
-                  <CardTitle className="text-sm font-semibold">Anon Public Key</CardTitle>
+                  <ShieldCheck className="size-4 text-emerald-500" />
+                  <CardTitle className="text-sm font-semibold">
+                    Anon Public Key
+                  </CardTitle>
                 </div>
-                <Badge variant="secondary" className="text-[10px] uppercase font-normal">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] uppercase font-normal"
+                >
                   Public / Client
                 </Badge>
               </div>
               <CardDescription className="text-xs text-muted-foreground">
-                Safe for frontend applications (React, Next.js client side). Grants read-only access by default.
+                Safe for frontend applications (React, Next.js client side).
+                Grants read-only access by default.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-4 pt-2">
-              <div
-                className="flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 p-2.5">
+              <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 p-2.5">
                 <code className="min-w-0 truncate font-mono text-xs text-foreground">
-                  {showAnonKey ? docs.anonKey : "••••••••••••••••••••••••••••••••••••••••"}
+                  {showAnonKey
+                    ? docs.anonKey
+                    : "••••••••••••••••••••••••••••••••••••••••"}
                 </code>
                 <div className="flex shrink-0 items-center gap-1">
                   <Button
@@ -108,7 +126,11 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
                     className="h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={() => setShowAnonKey((v) => !v)}
                   >
-                    {showAnonKey ? <EyeOff className="size-3.5"/> : <Eye className="size-3.5"/>}
+                    {showAnonKey ? (
+                      <EyeOff className="size-3.5" />
+                    ) : (
+                      <Eye className="size-3.5" />
+                    )}
                   </Button>
                   <Button
                     variant="ghost"
@@ -117,9 +139,9 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
                     onClick={() => void copyToClipboard(docs.anonKey, "anon")}
                   >
                     {copiedKey === "anon" ? (
-                      <Check className="size-3.5 text-emerald-500"/>
+                      <Check className="size-3.5 text-emerald-500" />
                     ) : (
-                      <Copy className="size-3.5"/>
+                      <Copy className="size-3.5" />
                     )}
                   </Button>
                 </div>
@@ -132,8 +154,10 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
             <CardHeader className="p-4 pb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <ShieldAlert className="size-4 text-rose-500"/>
-                  <CardTitle className="text-sm font-semibold">Service Role Key</CardTitle>
+                  <ShieldAlert className="size-4 text-rose-500" />
+                  <CardTitle className="text-sm font-semibold">
+                    Service Role Key
+                  </CardTitle>
                 </div>
                 <Badge
                   variant="outline"
@@ -143,12 +167,12 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
                 </Badge>
               </div>
               <CardDescription className="text-xs text-muted-foreground">
-                Full administrative access (bypasses policies). Never expose this key in client-side code.
+                Full administrative access (bypasses policies). Never expose
+                this key in client-side code.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-4 pt-2">
-              <div
-                className="flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 p-2.5">
+              <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 p-2.5">
                 <code className="min-w-0 truncate font-mono text-xs text-foreground">
                   {showServiceKey
                     ? docs.serviceRoleKey
@@ -161,7 +185,11 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
                     className="h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={() => setShowServiceKey((v) => !v)}
                   >
-                    {showServiceKey ? <EyeOff className="size-3.5"/> : <Eye className="size-3.5"/>}
+                    {showServiceKey ? (
+                      <EyeOff className="size-3.5" />
+                    ) : (
+                      <Eye className="size-3.5" />
+                    )}
                   </Button>
                   <Button
                     variant="ghost"
@@ -172,9 +200,9 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
                     }
                   >
                     {copiedKey === "service" ? (
-                      <Check className="size-3.5 text-emerald-500"/>
+                      <Check className="size-3.5 text-emerald-500" />
                     ) : (
-                      <Copy className="size-3.5"/>
+                      <Copy className="size-3.5" />
                     )}
                   </Button>
                 </div>
@@ -189,7 +217,7 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="space-y-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <Globe className="size-3.5 text-muted-foreground"/>
+                  <Globe className="size-3.5 text-muted-foreground" />
                   <span className="text-xs font-medium text-muted-foreground">
                     REST API Base Endpoint
                   </span>
@@ -202,16 +230,18 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
                 variant="outline"
                 size="sm"
                 className="h-8 gap-1.5 text-xs font-medium self-start sm:self-center shrink-0"
-                onClick={() => void copyToClipboard(`${docs.projectUrl}/rest`, "url")}
+                onClick={() =>
+                  void copyToClipboard(`${docs.projectUrl}`, "url")
+                }
               >
                 {copiedKey === "url" ? (
                   <>
-                    <Check className="size-3.5 text-emerald-500"/>
+                    <Check className="size-3.5 text-emerald-500" />
                     <span>Copied Base URL</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="size-3.5"/>
+                    <Copy className="size-3.5" />
                     <span>Copy Base URL</span>
                   </>
                 )}
@@ -222,16 +252,19 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
       </div>
 
       {/* Filtering Cheat Sheet */}
-      <QueryOperatorsGuide/>
+      <QueryOperatorsGuide />
 
       {/* Endpoints List */}
       {docs.tables.length === 0 ? (
         <Card className="border border-dashed border-border bg-card rounded-xl py-16">
           <CardContent className="flex flex-col items-center justify-center text-center">
-            <Terminal className="size-8 text-muted-foreground mb-3"/>
-            <p className="text-sm font-semibold text-foreground">No endpoints generated</p>
+            <Terminal className="size-8 text-muted-foreground mb-3" />
+            <p className="text-sm font-semibold text-foreground">
+              No endpoints generated
+            </p>
             <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-              Create a table in the Table Editor to automatically generate REST endpoints.
+              Create a table in the Table Editor to automatically generate REST
+              endpoints.
             </p>
           </CardContent>
         </Card>
@@ -239,13 +272,14 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-border pb-3">
             <div className="flex items-center gap-2">
-              <Layers className="size-4 text-muted-foreground"/>
+              <Layers className="size-4 text-muted-foreground" />
               <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Table Endpoints
               </h2>
             </div>
             <span className="text-xs text-muted-foreground">
-              {docs.tables.length} {docs.tables.length === 1 ? "table" : "tables"} available
+              {docs.tables.length}{" "}
+              {docs.tables.length === 1 ? "table" : "tables"} available
             </span>
           </div>
 
@@ -256,7 +290,10 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
                   <h3 className="text-base font-semibold text-foreground font-mono">
                     {table.name}
                   </h3>
-                  <Badge variant="outline" className="text-xs font-mono font-normal">
+                  <Badge
+                    variant="outline"
+                    className="text-xs font-mono font-normal"
+                  >
                     {table.endpoints.length} endpoints
                   </Badge>
                 </div>
@@ -284,21 +321,26 @@ export function ApiDocsClient({docs}: { docs: ProjectApiDocs }) {
   );
 }
 
-{/* Filter Operators Reference Guide */
+{
+  /* Filter Operators Reference Guide */
 }
 
 function QueryOperatorsGuide() {
   const [open, setOpen] = useState(false);
 
   const operators = [
-    {op: "eq", desc: "Equal to", example: "?age=eq.25"},
-    {op: "neq", desc: "Not equal to", example: "?status=neq.archived"},
-    {op: "gt", desc: "Greater than", example: "?price=gt.100"},
-    {op: "gte", desc: "Greater than or equal", example: "?score=gte.80"},
-    {op: "lt", desc: "Less than", example: "?stock=lt.10"},
-    {op: "lte", desc: "Less than or equal", example: "?discount=lte.50"},
-    {op: "like", desc: "Pattern matching (* for wildcards)", example: "?name=like.*John*"},
-    {op: "in", desc: "Value in list", example: "?role=in.(admin,user)"},
+    { op: "eq", desc: "Equal to", example: "?age=eq.25" },
+    { op: "neq", desc: "Not equal to", example: "?status=neq.archived" },
+    { op: "gt", desc: "Greater than", example: "?price=gt.100" },
+    { op: "gte", desc: "Greater than or equal", example: "?score=gte.80" },
+    { op: "lt", desc: "Less than", example: "?stock=lt.10" },
+    { op: "lte", desc: "Less than or equal", example: "?discount=lte.50" },
+    {
+      op: "like",
+      desc: "Pattern matching (* for wildcards)",
+      example: "?name=like.*John*",
+    },
+    { op: "in", desc: "Value in list", example: "?role=in.(admin,user)" },
   ];
 
   return (
@@ -309,21 +351,26 @@ function QueryOperatorsGuide() {
         className="w-full flex items-center justify-between p-4 text-left transition-colors hover:bg-muted/30"
       >
         <div className="flex items-center gap-2">
-          <HelpCircle className="size-4 text-primary"/>
+          <HelpCircle className="size-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             URL Filtering & Operator Reference
           </span>
         </div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <span>{open ? "Hide guide" : "Show operators guide"}</span>
-          {open ? <ChevronUp className="size-4"/> : <ChevronDown className="size-4"/>}
+          {open ? (
+            <ChevronUp className="size-4" />
+          ) : (
+            <ChevronDown className="size-4" />
+          )}
         </div>
       </button>
 
       {open && (
         <CardContent className="p-4 pt-0 border-t border-border mt-1">
           <p className="text-xs text-muted-foreground py-2">
-            Append operators directly to column names in GET query parameters for instant filtering:
+            Append operators directly to column names in GET query parameters
+            for instant filtering:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1">
             {operators.map((item) => (
@@ -339,8 +386,7 @@ function QueryOperatorsGuide() {
                     {item.desc}
                   </span>
                 </div>
-                <code
-                  className="block font-mono text-[11px] text-foreground truncate bg-background px-1.5 py-0.5 rounded border border-border">
+                <code className="block font-mono text-[11px] text-foreground truncate bg-background px-1.5 py-0.5 rounded border border-border">
                   {item.example}
                 </code>
               </div>
@@ -353,14 +399,14 @@ function QueryOperatorsGuide() {
 }
 
 function EndpointCard({
-                        endpoint,
-                        methodBadges,
-                        onCopy,
-                        copiedKey,
-                        anonKey,
-                        serviceRoleKey,
-                        useRealKeys,
-                      }: {
+  endpoint,
+  methodBadges,
+  onCopy,
+  copiedKey,
+  anonKey,
+  serviceRoleKey,
+  useRealKeys,
+}: {
   endpoint: {
     method: string;
     path: string;
@@ -380,7 +426,10 @@ function EndpointCard({
   // Dynamically replace placeholders in example cURL snippets
   const formattedExample = endpoint.example
     .replace("<ANON_KEY>", useRealKeys ? anonKey : "<ANON_KEY>")
-    .replace("<SERVICE_ROLE_KEY>", useRealKeys ? serviceRoleKey : "<SERVICE_ROLE_KEY>");
+    .replace(
+      "<SERVICE_ROLE_KEY>",
+      useRealKeys ? serviceRoleKey : "<SERVICE_ROLE_KEY>",
+    );
 
   return (
     <div
@@ -392,7 +441,8 @@ function EndpointCard({
           <span
             className={cn(
               "inline-flex items-center justify-center rounded-md border px-2 py-0.5 font-mono text-[11px] font-bold tracking-wide shrink-0",
-              methodBadges[endpoint.method] ?? "border-border bg-muted text-foreground"
+              methodBadges[endpoint.method] ??
+                "border-border bg-muted text-foreground",
             )}
           >
             {endpoint.method}
@@ -412,7 +462,11 @@ function EndpointCard({
           size="icon"
           className="h-7 w-7 text-muted-foreground shrink-0 group-hover:text-foreground"
         >
-          {expanded ? <ChevronUp className="size-4"/> : <ChevronDown className="size-4"/>}
+          {expanded ? (
+            <ChevronUp className="size-4" />
+          ) : (
+            <ChevronDown className="size-4" />
+          )}
         </Button>
       </div>
 
@@ -423,7 +477,7 @@ function EndpointCard({
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-              <Terminal className="size-3.5"/>
+              <Terminal className="size-3.5" />
               cURL Request Example
             </span>
             <Button
@@ -434,20 +488,19 @@ function EndpointCard({
             >
               {copiedKey === copyKey ? (
                 <>
-                  <Check className="size-3 text-emerald-500"/>
+                  <Check className="size-3 text-emerald-500" />
                   <span>Copied Request</span>
                 </>
               ) : (
                 <>
-                  <Copy className="size-3"/>
+                  <Copy className="size-3" />
                   <span>Copy cURL</span>
                 </>
               )}
             </Button>
           </div>
 
-          <pre
-            className="overflow-x-auto rounded-lg border border-border bg-background p-3 font-mono text-xs text-foreground whitespace-pre-wrap break-all leading-relaxed">
+          <pre className="overflow-x-auto rounded-lg border border-border bg-background p-3 font-mono text-xs text-foreground whitespace-pre-wrap break-all leading-relaxed">
             {formattedExample}
           </pre>
         </div>

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -130,20 +131,11 @@ export class StorageService {
   }
 
   // Delete a bucket and all its associated objects
-  async deleteBucket(orgSlug: string, projectSlug: string, bucketId: string) {
-    // Make sure the bucket belongs to this project before touching anything
-    const bucket = await this.getBucketInProject(
-      orgSlug,
-      projectSlug,
-      bucketId,
-    );
-
-    // Get all objects associated with the bucket
-    // We need to delete the objects from UploadThing before deleting the bucket
+  async deleteBucket(bucketId: string) {
     const objects = await this.drizzle.db
       .select({ utKey: storageObjects.utKey })
       .from(storageObjects)
-      .where(eq(storageObjects.bucketId, bucket.id));
+      .where(eq(storageObjects.bucketId, bucketId));
 
     // If there are any objects, delete them from UploadThing
     if (objects.length > 0) {
@@ -153,29 +145,21 @@ export class StorageService {
     // Delete the bucket from the storageBuckets table
     await this.drizzle.db
       .delete(storageBuckets)
-      .where(eq(storageBuckets.id, bucket.id));
+      .where(eq(storageBuckets.id, bucketId));
 
     return { message: "Bucket deleted successfully" };
   }
 
   // Get all objects for a given bucket
-  async getObjects(orgSlug: string, projectSlug: string, bucketId: string) {
-    const bucket = await this.getBucketInProject(
-      orgSlug,
-      projectSlug,
-      bucketId,
-    );
-
+  async getObjects(bucketId: string) {
     return this.drizzle.db
       .select()
       .from(storageObjects)
-      .where(eq(storageObjects.bucketId, bucket.id));
+      .where(eq(storageObjects.bucketId, bucketId));
   }
 
   // Save an object to the storageObjects table
-  async saveObjects(
-    orgSlug: string,
-    projectSlug: string,
+  async saveObject(
     bucketId: string,
     // The file object contains the following properties:
     // name: The name of the file
@@ -191,12 +175,13 @@ export class StorageService {
       url: string;
     },
   ) {
-    // Get the bucket (scoped to this project) to check its access level
-    const bucket = await this.getBucketInProject(
-      orgSlug,
-      projectSlug,
-      bucketId,
-    );
+    const [bucket] = await this.drizzle.db
+      .select()
+      .from(storageBuckets)
+      .where(eq(storageBuckets.id, bucketId))
+      .limit(1);
+
+    if (!bucket) throw new NotFoundException("Bucket not found");
 
     // If the bucket is public, use the file URL; otherwise, set the URL to an empty string
     const url = bucket.access === "public" ? file.url : "";
@@ -205,7 +190,7 @@ export class StorageService {
     const [object] = await this.drizzle.db
       .insert(storageObjects)
       .values({
-        bucketId: bucket.id,
+        bucketId,
         name: file.name,
         size: file.size,
         mimeType: file.type,
@@ -219,12 +204,15 @@ export class StorageService {
   }
 
   // Delete an object from the storageObjects table and UploadThing
-  async deleteObject(orgSlug: string, projectSlug: string, objectId: string) {
-    const object = await this.getObjectInProject(
-      orgSlug,
-      projectSlug,
-      objectId,
-    );
+  async deleteObject(objectId: string) {
+    const [object] = await this.drizzle.db
+      .select()
+      .from(storageObjects)
+      .where(eq(storageObjects.id, objectId))
+      .limit(1);
+
+    // If the object is not found, throw a NotFoundException
+    if (!object) throw new NotFoundException("File not found");
 
     // Delete the object from UploadThing using the utKey
     await this.utapi.deleteFiles(object.utKey);
@@ -232,18 +220,20 @@ export class StorageService {
     // Delete the object from the storageObjects table
     await this.drizzle.db
       .delete(storageObjects)
-      .where(eq(storageObjects.id, object.id));
+      .where(eq(storageObjects.id, objectId));
 
     return { message: "File deleted successfully" };
   }
 
   // Generate a signed URL for an object
-  async getSignedUrl(orgSlug: string, projectSlug: string, objectId: string) {
-    const object = await this.getObjectInProject(
-      orgSlug,
-      projectSlug,
-      objectId,
-    );
+  async getSignedUrl(objectId: string) {
+    const [object] = await this.drizzle.db
+      .select()
+      .from(storageObjects)
+      .where(eq(storageObjects.id, objectId))
+      .limit(1);
+
+    if (!object) throw new NotFoundException("File not found");
 
     // Generate a signed URL for the object using the utKey
     // The signed URL will expire in 1 hour (3600 seconds)
@@ -253,5 +243,51 @@ export class StorageService {
 
     // Return the signed URL
     return { url: ufsUrl };
+  }
+
+  // Helper method to assert that the project slug in the URL matches the project slug
+  // in the database for a given project ID
+  async assertProjectSlug(
+    projectId: string,
+    projectSlug: string,
+  ): Promise<void> {
+    // Query the database for the project with the given project ID and select its slug
+    const [project] = await this.drizzle.db
+      .select({ slug: projects.slug })
+      .from(projects)
+      .where(eq(projects.id, projectId))
+      .limit(1);
+
+    // If no project is found, throw a NotFoundException
+    if (!project) throw new NotFoundException("Project not found");
+
+    // If the project slug in the database does not match the project slug in the URL, throw a ForbiddenException
+    if (project.slug !== projectSlug) {
+      throw new ForbiddenException(
+        "API key does not match project slug in URL. Check your API key and project slug.",
+      );
+    }
+  }
+
+  // Helper method to get a bucket by name for a given project ID
+  async getBucketByName(projectId: string, bucketName: string) {
+    // Query the database for the bucket with the given project ID and bucket name
+    // We use an AND condition to ensure that both the project ID and bucket name match
+    const [bucket] = await this.drizzle.db
+      .select()
+      .from(storageBuckets)
+      .where(
+        and(
+          eq(storageBuckets.projectId, projectId),
+          eq(storageBuckets.name, bucketName),
+        ),
+      )
+      .limit(1);
+
+    // If no bucket is found, throw a NotFoundException
+    if (!bucket) throw new NotFoundException("Bucket not found");
+
+    // Return the found bucket
+    return bucket;
   }
 }
