@@ -2,14 +2,14 @@
   "name": "square-base-db-js",
   "version": "1.0.0",
   "description": "Official JavaScript client for Square Base DB. This package provides a simple and efficient way to interact with Square Base DB from JavaScript applications.",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "scripts": {
@@ -22,7 +22,8 @@
   "type": "module",
   "dependencies": {
     "@square-base-db/constants": "workspace:*",
-    "socket.io-client": "^4.8.4"
+    "socket.io-client": "^4.8.4",
+    "uploadthing": "^7.7.4"
   },
   "devDependencies": {
     "@square-base-db/types": "workspace:*",

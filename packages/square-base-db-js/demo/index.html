@@ -1,0 +1,1197 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Square Base DB SDK Demo</title>
+  <style>
+    /* Tokens mirror the dashboard's globals.css (shadcn / oklch). */
+    :root {
+      color-scheme: light dark;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.148 0.004 228.8);
+      --card: oklch(1 0 0);
+      --muted: oklch(0.963 0.002 197.1);
+      --muted-foreground: oklch(0.56 0.021 213.5);
+      --primary: oklch(0.457 0.24 277.023);
+      --primary-foreground: oklch(0.962 0.018 272.314);
+      --primary-text: oklch(0.457 0.24 277.023);
+      --border: oklch(0.925 0.005 214.3);
+      --input: oklch(0.925 0.005 214.3);
+      --ring: oklch(0.723 0.014 214.4);
+      --destructive: oklch(0.577 0.245 27.325);
+      --success: oklch(0.596 0.145 163.225);
+      --warning: oklch(0.666 0.179 58.318);
+      --code-bg: var(--muted);
+
+      --radius: 0.625rem;
+      --radius-md: calc(var(--radius) * 0.8);
+      --radius-lg: var(--radius);
+      --radius-xl: calc(var(--radius) * 1.4);
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: oklch(0.148 0.004 228.8);
+        --foreground: oklch(0.987 0.002 197.1);
+        --card: oklch(0.218 0.008 223.9);
+        --muted: oklch(0.275 0.011 216.9);
+        --muted-foreground: oklch(0.723 0.014 214.4);
+        --primary: oklch(0.398 0.195 277.366);
+        --primary-foreground: oklch(0.962 0.018 272.314);
+        --primary-text: oklch(0.785 0.115 274.713);
+        --border: oklch(1 0 0 / 10%);
+        --input: oklch(1 0 0 / 15%);
+        --ring: oklch(0.56 0.021 213.5);
+        --destructive: oklch(0.704 0.191 22.216);
+        --success: oklch(0.765 0.177 163.223);
+        --warning: oklch(0.828 0.189 84.429);
+        --code-bg: var(--background);
+      }
+
+      input,
+      textarea,
+      select {
+        background: color-mix(in oklab, var(--input) 30%, transparent) !important;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+      font: 14px/1.5 var(--sans);
+    }
+
+    code {
+      padding: .05rem .3rem;
+      border-radius: 4px;
+      background: var(--muted);
+      font: .85em var(--mono);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .wrap {
+        padding: 1.5rem;
+      }
+    }
+
+    /* ---------- top bar ---------- */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: color-mix(in oklab, var(--background) 85%, transparent);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-top: .75rem;
+      padding-bottom: .75rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--primary-text);
+      letter-spacing: -.01em;
+    }
+
+    .sub {
+      margin: .15rem 0 0;
+      color: var(--muted-foreground);
+      font-size: .8rem;
+    }
+
+    @media (max-width: 480px) {
+      .sub {
+        display: none;
+      }
+    }
+
+    .pill {
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .25rem .7rem;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+    }
+
+    .pill.on {
+      color: var(--success);
+      border-color: color-mix(in oklab, var(--success) 40%, transparent);
+      background: color-mix(in oklab, var(--success) 10%, transparent);
+    }
+
+    /* ---------- layout ---------- */
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+      align-items: start;
+    }
+
+    .span-all {
+      grid-column: 1 / -1;
+    }
+
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      min-width: 0;
+    }
+
+    fieldset:disabled .card {
+      opacity: .55;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 1rem;
+      min-width: 0;
+    }
+
+    .stack {
+      margin-bottom: 1rem;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      flex-wrap: wrap;
+      margin-bottom: .75rem;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: .95rem;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted-foreground);
+    }
+
+    /* ---------- forms ---------- */
+    label {
+      display: block;
+      margin-bottom: .25rem;
+      color: var(--muted-foreground);
+      font-size: .75rem;
+      font-weight: 600;
+    }
+
+    .field {
+      margin-bottom: .75rem;
+      min-width: 0;
+    }
+
+    .row {
+      display: grid;
+      gap: .75rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      min-height: 40px;
+      background: transparent;
+      color: var(--foreground);
+      border: 1px solid var(--input);
+      border-radius: var(--radius-lg);
+      padding: .55rem .7rem;
+      font: 13px/1.4 var(--mono);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--muted-foreground);
+      opacity: .8;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--primary-text) 70%, transparent);
+      outline-offset: 1px;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      min-height: 0;
+      accent-color: var(--primary);
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin: 0 0 .75rem;
+      font-size: .8rem;
+      font-weight: 400;
+    }
+
+    .hint {
+      margin: .25rem 0 0;
+      color: var(--muted-foreground);
+      font-size: .75rem;
+    }
+
+    .input-group {
+      display: flex;
+      gap: .5rem;
+    }
+
+    .input-group input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    button {
+      min-height: 40px;
+      padding: .45rem 1rem;
+      border: 1px solid transparent;
+      border-radius: var(--radius-lg);
+      font: 600 13px var(--sans);
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: color-mix(in oklab, var(--primary) 90%, transparent);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--foreground);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--muted);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--destructive);
+      border-color: color-mix(in oklab, var(--destructive) 45%, transparent);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: color-mix(in oklab, var(--destructive) 10%, transparent);
+    }
+
+    .btn-ghost {
+      min-height: 28px;
+      padding: .1rem .55rem;
+      background: transparent;
+      color: var(--muted-foreground);
+      border-color: var(--border);
+      font-size: .7rem;
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      color: var(--foreground);
+      background: var(--muted);
+    }
+
+    .status-line {
+      margin: .75rem 0 0;
+      font-size: .8rem;
+      color: var(--muted-foreground);
+      min-height: 1.2em;
+    }
+
+    .status-line.err {
+      color: var(--destructive);
+    }
+
+    /* ---------- results ---------- */
+    .result {
+      margin-top: .75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .result-meta {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .35rem .6rem;
+      background: var(--muted);
+      font-size: .72rem;
+      color: var(--muted-foreground);
+    }
+
+    .result-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    pre {
+      margin: 0;
+      padding: .75rem;
+      max-height: 18rem;
+      overflow: auto;
+      background: var(--code-bg);
+      color: var(--foreground);
+      font: 12px/1.5 var(--mono);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: .05rem .45rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      color: var(--muted-foreground);
+      font: 700 .68rem var(--mono);
+      letter-spacing: .02em;
+    }
+
+    .badge.ok,
+    .badge.INSERT {
+      color: var(--success);
+      border-color: color-mix(in oklab, var(--success) 40%, transparent);
+      background: color-mix(in oklab, var(--success) 10%, transparent);
+    }
+
+    .badge.err,
+    .badge.DELETE {
+      color: var(--destructive);
+      border-color: color-mix(in oklab, var(--destructive) 40%, transparent);
+      background: color-mix(in oklab, var(--destructive) 10%, transparent);
+    }
+
+    .badge.UPDATE,
+    .badge.loading {
+      color: var(--warning);
+      border-color: color-mix(in oklab, var(--warning) 40%, transparent);
+      background: color-mix(in oklab, var(--warning) 10%, transparent);
+    }
+
+    /* ---------- realtime ---------- */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-bottom: .75rem;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .15rem .3rem .15rem .6rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font: .75rem var(--mono);
+    }
+
+    .chip button {
+      min-height: 22px;
+      width: 22px;
+      padding: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted-foreground);
+      font-size: .9rem;
+      line-height: 1;
+    }
+
+    .chip button:hover {
+      color: var(--destructive);
+    }
+
+    .counters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem 1rem;
+      margin: .75rem 0;
+      font-size: .78rem;
+      color: var(--muted-foreground);
+    }
+
+    .counters b {
+      color: var(--foreground);
+      font-family: var(--mono);
+    }
+
+    .events,
+    .log {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-height: 22rem;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .events:empty,
+    .log:empty {
+      display: none;
+    }
+
+    .event {
+      padding: .5rem .7rem;
+      border-left: 3px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .event:last-child {
+      border-bottom: 0;
+    }
+
+    .event.INSERT {
+      border-left-color: var(--success);
+    }
+
+    .event.UPDATE {
+      border-left-color: var(--warning);
+    }
+
+    .event.DELETE {
+      border-left-color: var(--destructive);
+    }
+
+    .event-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .25rem .6rem;
+      font-size: .75rem;
+    }
+
+    .event-table {
+      font-family: var(--mono);
+    }
+
+    .event-time {
+      margin-left: auto;
+      color: var(--muted-foreground);
+      font-family: var(--mono);
+    }
+
+    details {
+      margin-top: .3rem;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--muted-foreground);
+      font: .75rem var(--mono);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    details pre {
+      margin-top: .4rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    .empty {
+      margin: 0;
+      padding: 1.25rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      color: var(--muted-foreground);
+      font-size: .8rem;
+    }
+
+    /* ---------- activity log ---------- */
+    .log-row {
+      display: grid;
+      grid-template-columns: auto auto minmax(0, 1fr) auto;
+      gap: .25rem .6rem;
+      align-items: center;
+      padding: .4rem .7rem;
+      border-bottom: 1px solid var(--border);
+      font-size: .75rem;
+    }
+
+    .log-row:last-child {
+      border-bottom: 0;
+    }
+
+    .log-time,
+    .log-ms {
+      color: var(--muted-foreground);
+      font-family: var(--mono);
+    }
+
+    .log-label {
+      font-family: var(--mono);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .log-note {
+      grid-column: 1 / -1;
+      color: var(--muted-foreground);
+      overflow-wrap: anywhere;
+    }
+
+    .log-note:empty {
+      display: none;
+    }
+
+    @media (min-width: 640px) {
+      .log-row {
+        grid-template-columns: auto auto minmax(0, 1fr) auto minmax(0, 1.2fr);
+      }
+
+      .log-note {
+        grid-column: auto;
+      }
+
+      .log-note:empty {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <div>
+        <h1>⚡ Square Base DB SDK Demo</h1>
+        <p class="sub">Manual test page for the JS SDK · open it in two tabs: subscribe in one, insert in the other.</p>
+      </div>
+      <span id="connPill" class="pill" role="status">● Not connected</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Connection -->
+    <section class="card stack">
+      <div class="card-head">
+        <h2>🔌 Connection</h2>
+        <span class="tag">createClient(url, key)</span>
+      </div>
+
+      <form id="connectForm" autocomplete="off">
+        <div class="field">
+          <label for="projectUrl">Project URL</label>
+          <input id="projectUrl" placeholder="http://localhost:8080/api/projects/YOUR_PROJECT_SLUG"
+            spellcheck="false" />
+          <p class="hint">Copy from Dashboard → API → Project URL</p>
+        </div>
+
+        <div class="field">
+          <label for="apiKey">API key</label>
+          <div class="input-group">
+            <input id="apiKey" type="password" placeholder="anon or service role key" spellcheck="false" />
+            <button id="toggleKey" type="button" class="btn-secondary">Show</button>
+          </div>
+          <p class="hint">Service role for writes · anon key for read + realtime</p>
+        </div>
+
+        <label class="check" for="rememberKey">
+          <input id="rememberKey" type="checkbox" />
+          Remember the key on this device (stored in localStorage)
+        </label>
+
+        <div class="actions">
+          <button id="connectBtn" type="submit" class="btn-primary">Connect</button>
+          <button id="disconnectBtn" type="button" class="btn-secondary" disabled>Disconnect</button>
+        </div>
+        <p id="connStatus" class="status-line" role="status"></p>
+      </form>
+    </section>
+
+    <fieldset id="app" disabled>
+      <div class="grid">
+        <!-- Targets -->
+        <section class="card span-all">
+          <div class="card-head">
+            <h2>🎯 Targets</h2>
+            <span class="tag">shared by the cards below</span>
+          </div>
+          <div class="row">
+            <div class="field" style="margin-bottom:0">
+              <label for="tableName">Table (database + realtime)</label>
+              <input id="tableName" value="products" spellcheck="false" />
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label for="bucketName">Bucket (storage)</label>
+              <input id="bucketName" placeholder="create it in the dashboard first" spellcheck="false" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Insert -->
+        <section class="card">
+          <div class="card-head">
+            <h2>📝 Database · Insert</h2>
+            <span class="tag">from(table).insert(row)</span>
+          </div>
+          <form id="insertForm">
+            <div class="field">
+              <label for="insertJson">Row (JSON)</label>
+              <textarea id="insertJson" rows="5" spellcheck="false">{ "name": "Demo product" }</textarea>
+            </div>
+            <div class="actions">
+              <button type="submit" class="btn-primary">Insert</button>
+            </div>
+          </form>
+          <div data-result="insert"></div>
+        </section>
+
+        <!-- Query -->
+        <section class="card">
+          <div class="card-head">
+            <h2>🔎 Database · Query</h2>
+            <span class="tag">select · order · limit</span>
+          </div>
+          <form id="queryForm">
+            <div class="row">
+              <div class="field">
+                <label for="qColumns">Columns</label>
+                <input id="qColumns" value="*" spellcheck="false" />
+              </div>
+              <div class="field">
+                <label for="qLimit">Limit</label>
+                <input id="qLimit" type="number" min="1" inputmode="numeric" value="10" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="qOrderBy">Order by</label>
+                <input id="qOrderBy" value="created_at" placeholder="leave empty to skip" spellcheck="false" />
+              </div>
+              <div class="field">
+                <label for="qDirection">Direction</label>
+                <select id="qDirection">
+                  <option value="desc">desc</option>
+                  <option value="asc">asc</option>
+                </select>
+              </div>
+            </div>
+            <div class="actions">
+              <button type="submit" class="btn-primary">Fetch</button>
+            </div>
+          </form>
+          <div data-result="query"></div>
+        </section>
+
+        <!-- Storage -->
+        <section class="card">
+          <div class="card-head">
+            <h2>📁 Storage · List</h2>
+            <span class="tag">storage.from(bucket).list()</span>
+          </div>
+          <form id="storageForm">
+            <p class="hint" style="margin:0 0 .75rem">Uses the bucket name from Targets.</p>
+            <div class="actions">
+              <button type="submit" class="btn-primary">List files</button>
+            </div>
+          </form>
+          <div data-result="storage"></div>
+        </section>
+
+        <!-- Auth -->
+        <section class="card">
+          <div class="card-head">
+            <h2>🔐 Auth</h2>
+            <span class="tag">auth.signUp / auth.signIn</span>
+          </div>
+          <form id="authForm" autocomplete="off">
+            <div class="row">
+              <div class="field">
+                <label for="authEmail">Email</label>
+                <input id="authEmail" type="email" placeholder="you@example.com" />
+              </div>
+              <div class="field">
+                <label for="authPassword">Password</label>
+                <input id="authPassword" type="password" placeholder="min 8 characters" />
+              </div>
+            </div>
+            <div class="actions">
+              <button type="submit" data-action="signIn" class="btn-primary">Sign in</button>
+              <button type="submit" data-action="signUp" class="btn-secondary">Sign up</button>
+            </div>
+          </form>
+          <div data-result="auth"></div>
+        </section>
+
+        <!-- Realtime -->
+        <section class="card span-all">
+          <div class="card-head">
+            <h2>⚡ Realtime</h2>
+            <span class="tag">realtime.subscribe(table, cb)</span>
+          </div>
+
+          <div class="actions" style="margin-bottom:.75rem">
+            <button id="subscribeBtn" type="button" class="btn-primary">Subscribe to table</button>
+            <button id="unsubscribeAllBtn" type="button" class="btn-danger">Unsubscribe all</button>
+            <button id="clearEventsBtn" type="button" class="btn-secondary">Clear events</button>
+          </div>
+
+          <div id="subChips" class="chips" aria-live="polite"></div>
+
+          <div class="counters" aria-live="polite">
+            <span>Total <b id="cntTotal">0</b></span>
+            <span>Insert <b id="cntInsert">0</b></span>
+            <span>Update <b id="cntUpdate">0</b></span>
+            <span>Delete <b id="cntDelete">0</b></span>
+          </div>
+
+          <p id="eventsEmpty" class="empty">No events yet. Subscribe, then insert, update or delete a row.</p>
+          <ul id="events" class="events"></ul>
+        </section>
+
+        <!-- Activity -->
+        <section class="card span-all">
+          <div class="card-head">
+            <h2>🧾 Activity log</h2>
+            <button id="clearLogBtn" type="button" class="btn-ghost">Clear</button>
+          </div>
+          <p id="logEmpty" class="empty">Every SDK call shows up here with its duration.</p>
+          <ul id="log" class="log"></ul>
+          <p class="hint">After connecting, the client is also available in the browser console as <code>client</code>.
+          </p>
+        </section>
+      </div>
+    </fieldset>
+  </main>
+
+  <script type="module">
+    import { createClient } from '../dist/index.js';
+
+    const $ = (id) => document.getElementById(id);
+    const MAX_EVENTS = 100;
+    const MAX_LOG = 100;
+
+    let client = null;
+    const subs = new Map(); // table -> unsubscribe fn
+    const counts = { total: 0, INSERT: 0, UPDATE: 0, DELETE: 0 };
+
+    /* ---------- storage helpers ---------- */
+    const store = {
+      get(k) { try { return localStorage.getItem('sbdb-demo:' + k); } catch { return null; } },
+      set(k, v) { try { localStorage.setItem('sbdb-demo:' + k, v); } catch { /* ignore */ } },
+      del(k) { try { localStorage.removeItem('sbdb-demo:' + k); } catch { /* ignore */ } },
+    };
+
+    /* ---------- formatting helpers ---------- */
+    function stringify(value) {
+      try {
+        return JSON.stringify(value, null, 2) ?? '(empty)';
+      } catch {
+        return String(value);
+      }
+    }
+
+    function formatError(err) {
+      if (typeof err === 'string') return err;
+      if (err instanceof Error) return err.message;
+      if (err && typeof err === 'object') {
+        const msg = err.message ?? err.error;
+        return msg ? `${msg}\n\n${stringify(err)}` : stringify(err);
+      }
+      return String(err);
+    }
+
+    function nowTime() {
+      return new Date().toLocaleTimeString([], { hour12: false });
+    }
+
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    /* ---------- result panels ---------- */
+    function createResult(host) {
+      host.classList.add('result');
+
+      const meta = el('div', 'result-meta');
+      const badge = el('span', 'badge', 'IDLE');
+      badge.setAttribute('aria-live', 'polite');
+      const info = el('span', 'result-info');
+      const copy = el('button', 'btn-ghost', 'Copy');
+      copy.type = 'button';
+      meta.append(badge, info, copy);
+
+      const pre = el('pre', '', 'No request yet.');
+      host.append(meta, pre);
+
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pre.textContent);
+          copy.textContent = 'Copied';
+        } catch {
+          copy.textContent = 'Failed';
+        }
+        setTimeout(() => (copy.textContent = 'Copy'), 1200);
+      });
+
+      return {
+        set(state, ms, text) {
+          const labels = { loading: 'RUNNING', ok: 'OK', err: 'ERROR' };
+          badge.className = `badge ${state}`;
+          badge.textContent = labels[state] ?? 'IDLE';
+          info.textContent = state === 'loading' ? 'Waiting for response…' : ms ? `${ms} ms` : '';
+          if (text !== undefined) pre.textContent = text;
+        },
+      };
+    }
+
+    const results = {};
+    document.querySelectorAll('[data-result]').forEach((host) => {
+      results[host.dataset.result] = createResult(host);
+    });
+
+    /* ---------- activity log ---------- */
+    function log(label, ok, ms, note = '') {
+      const row = el('li', 'log-row');
+      row.append(
+        el('span', 'log-time', nowTime()),
+        el('span', `badge ${ok ? 'ok' : 'err'}`, ok ? 'OK' : 'ERR'),
+        el('span', 'log-label', label),
+        el('span', 'log-ms', ms ? `${ms} ms` : '—'),
+        el('span', 'log-note', note),
+      );
+      $('log').prepend(row);
+      $('logEmpty').hidden = true;
+      while ($('log').children.length > MAX_LOG) $('log').lastElementChild.remove();
+    }
+
+    $('clearLogBtn').addEventListener('click', () => {
+      $('log').replaceChildren();
+      $('logEmpty').hidden = false;
+    });
+
+    function summarize(payload) {
+      return Array.isArray(payload) ? `${payload.length} item(s)` : '';
+    }
+
+    /* ---------- run an SDK call and render the outcome ---------- */
+    async function run(label, outKey, fn) {
+      const out = results[outKey];
+      out.set('loading');
+      const t0 = performance.now();
+
+      try {
+        const res = await fn();
+        const ms = Math.round(performance.now() - t0);
+        const shaped = res && typeof res === 'object' && ('data' in res || 'error' in res);
+        const error = shaped ? res.error : null;
+        const payload = shaped ? res.data : res;
+
+        if (error) {
+          out.set('err', ms, formatError(error));
+          log(label, false, ms, formatError(error).split('\n')[0]);
+        } else {
+          out.set('ok', ms, stringify(payload));
+          log(label, true, ms, summarize(payload));
+        }
+      } catch (err) {
+        const ms = Math.round(performance.now() - t0);
+        out.set('err', ms, formatError(err));
+        log(label, false, ms, formatError(err).split('\n')[0]);
+      }
+    }
+
+    /* ---------- connection ---------- */
+    function setConnStatus(message, isError = false) {
+      $('connStatus').textContent = message;
+      $('connStatus').classList.toggle('err', isError);
+    }
+
+    function setConnected(on) {
+      $('app').disabled = !on;
+      $('connectBtn').disabled = on;
+      $('disconnectBtn').disabled = !on;
+      $('projectUrl').disabled = on;
+      $('apiKey').disabled = on;
+      $('connPill').classList.toggle('on', on);
+    }
+
+    $('toggleKey').addEventListener('click', () => {
+      const input = $('apiKey');
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      $('toggleKey').textContent = show ? 'Hide' : 'Show';
+    });
+
+    $('connectForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const url = $('projectUrl').value.trim();
+      const key = $('apiKey').value.trim();
+
+      if (!url || !key) return setConnStatus('Enter a project URL and an API key.', true);
+      try { new URL(url); } catch { return setConnStatus('Project URL is not a valid URL.', true); }
+
+      try {
+        client = createClient(url, key);
+      } catch (err) {
+        return setConnStatus(`Could not create client: ${formatError(err)}`, true);
+      }
+
+      window.client = client;
+      store.set('url', url);
+      if ($('rememberKey').checked) {
+        store.set('key', key);
+        store.set('remember', '1');
+      } else {
+        store.del('key');
+        store.del('remember');
+      }
+
+      setConnected(true);
+      $('connPill').textContent = `● Connected · key …${key.slice(-4)}`;
+      setConnStatus('Client initialised.');
+      log('createClient', true, 0, url);
+    });
+
+    $('disconnectBtn').addEventListener('click', () => {
+      unsubscribeAll();
+      client = null;
+      delete window.client;
+      setConnected(false);
+      $('connPill').textContent = '● Not connected';
+      setConnStatus('Disconnected.');
+      log('disconnect', true, 0);
+    });
+
+    /* ---------- targets ---------- */
+    function getTable() {
+      const table = $('tableName').value.trim();
+      if (!table) $('tableName').focus();
+      return table;
+    }
+
+    $('tableName').addEventListener('input', () => store.set('table', $('tableName').value));
+    $('bucketName').addEventListener('input', () => store.set('bucket', $('bucketName').value));
+
+    /* ---------- database ---------- */
+    $('insertForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const table = getTable();
+      if (!table) return;
+
+      let row;
+      try {
+        row = JSON.parse($('insertJson').value);
+      } catch (err) {
+        results.insert.set('err', 0, `Invalid JSON: ${err.message}`);
+        return;
+      }
+
+      run(`insert → ${table}`, 'insert', () => client.from(table).insert(row));
+    });
+
+    $('queryForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const table = getTable();
+      if (!table) return;
+
+      const columns = $('qColumns').value.trim() || '*';
+      const orderBy = $('qOrderBy').value.trim();
+      const direction = $('qDirection').value;
+      const limit = parseInt($('qLimit').value, 10);
+
+      run(`select → ${table}`, 'query', () => {
+        let q = client.from(table).select(columns);
+        if (orderBy) q = q.order(orderBy, direction);
+        if (Number.isFinite(limit) && limit > 0) q = q.limit(limit);
+        return q;
+      });
+    });
+
+    /* ---------- storage ---------- */
+    $('storageForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const bucket = $('bucketName').value.trim();
+      if (!bucket) {
+        $('bucketName').focus();
+        results.storage.set('err', 0, 'Enter a bucket name in Targets first.');
+        return;
+      }
+      run(`storage.list → ${bucket}`, 'storage', () => client.storage.from(bucket).list());
+    });
+
+    /* ---------- auth ---------- */
+    $('authForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const action = e.submitter?.dataset.action ?? 'signIn';
+      const email = $('authEmail').value.trim();
+      const password = $('authPassword').value;
+
+      run(`auth.${action}`, 'auth', () => client.auth[action]({ email, password }));
+    });
+
+    /* ---------- realtime ---------- */
+    function renderCounts() {
+      $('cntTotal').textContent = counts.total;
+      $('cntInsert').textContent = counts.INSERT;
+      $('cntUpdate').textContent = counts.UPDATE;
+      $('cntDelete').textContent = counts.DELETE;
+    }
+
+    function renderSubs() {
+      const box = $('subChips');
+      box.replaceChildren();
+
+      for (const table of subs.keys()) {
+        const chip = el('span', 'chip', `● ${table}`);
+        const x = el('button', '', '×');
+        x.type = 'button';
+        x.setAttribute('aria-label', `Unsubscribe from ${table}`);
+        x.addEventListener('click', () => unsubscribe(table));
+        chip.append(x);
+        box.append(chip);
+      }
+    }
+
+    function subscribe() {
+      const table = getTable();
+      if (!table) return;
+      if (subs.has(table)) return log(`subscribe → ${table}`, false, 0, 'Already subscribed');
+
+      try {
+        const unsub = client.realtime.subscribe(table, (event) => addEvent(table, event));
+        subs.set(table, typeof unsub === 'function' ? unsub : () => { });
+        renderSubs();
+        log(`subscribe → ${table}`, true, 0);
+      } catch (err) {
+        log(`subscribe → ${table}`, false, 0, formatError(err));
+      }
+    }
+
+    function unsubscribe(table) {
+      const fn = subs.get(table);
+      if (!fn) return;
+      try { fn(); } catch { /* ignore */ }
+      subs.delete(table);
+      renderSubs();
+      log(`unsubscribe → ${table}`, true, 0);
+    }
+
+    function unsubscribeAll() {
+      for (const table of [...subs.keys()]) unsubscribe(table);
+    }
+
+    function addEvent(table, event) {
+      const type = String(event?.type ?? 'EVENT').toUpperCase();
+      counts.total++;
+      if (type in counts) counts[type]++;
+      renderCounts();
+
+      const li = el('li', `event ${type}`);
+
+      const head = el('div', 'event-head');
+      head.append(
+        el('span', `badge ${type}`, type),
+        el('span', 'event-table', event?.table ?? table),
+        el('span', 'event-time', nowTime()),
+      );
+
+      let preview = '';
+      try { preview = JSON.stringify(event?.record) ?? ''; } catch { /* ignore */ }
+
+      const details = el('details');
+      const summary = el('summary', '', preview.slice(0, 160) || 'View payload');
+      const pre = el('pre', '', stringify(event));
+      details.append(summary, pre);
+
+      li.append(head, details);
+      $('events').prepend(li);
+      $('eventsEmpty').hidden = true;
+      while ($('events').children.length > MAX_EVENTS) $('events').lastElementChild.remove();
+    }
+
+    $('subscribeBtn').addEventListener('click', subscribe);
+    $('unsubscribeAllBtn').addEventListener('click', unsubscribeAll);
+    $('clearEventsBtn').addEventListener('click', () => {
+      $('events').replaceChildren();
+      $('eventsEmpty').hidden = false;
+      for (const k of Object.keys(counts)) counts[k] = 0;
+      renderCounts();
+    });
+
+    /* ---------- restore saved values ---------- */
+    $('projectUrl').value = store.get('url') ?? $('projectUrl').value;
+    $('tableName').value = store.get('table') ?? $('tableName').value;
+    $('bucketName').value = store.get('bucket') ?? '';
+    if (store.get('remember') === '1') {
+      $('rememberKey').checked = true;
+      $('apiKey').value = store.get('key') ?? '';
+    }
+  </script>
+</body>
+
+</html>
