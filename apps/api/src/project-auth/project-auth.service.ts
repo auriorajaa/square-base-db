@@ -61,10 +61,10 @@ export class ProjectAuthService {
         CREATE TABLE IF NOT EXISTS "${dbSchema}"."auth_users" (
           id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
           email TEXT NOT NULL UNIQUE,
-          password hash TEXT,
+          password_hash TEXT,
           email_verified BOOLEAN NOT NULL DEFAULT FALSE,
           provider TEXT NOT NULL DEFAULT 'email',
-          created_at TIMESTAMPTZ NOT_NULL DEFAULT NOW()
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
       `),
     );
