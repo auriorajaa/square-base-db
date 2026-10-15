@@ -137,6 +137,9 @@ export class ProjectsService {
     // Provision the new database schema for the project
     await this.provisionSchema(dbSchema);
 
+    // Generate a random JWT secret for the project
+    const authJwtSecret = randomBytes(32).toString("hex");
+
     // Insert the new project into the database and return the created project
     const [project] = await this.drizzle.db
       .insert(projects)
@@ -152,6 +155,8 @@ export class ProjectsService {
         anonKey: "",
         // Initialize the service role key as an empty string for now
         serviceRoleKey: "",
+        // Store the generated JWT secret in the database
+        authJwtSecret,
       })
       // Return the created project row after insertion
       .returning();
