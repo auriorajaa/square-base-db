@@ -239,6 +239,7 @@ export interface MagicLinkInput {
 }
 
 export interface ProjectOAuthSettings {
+  siteUrl: string | null;
   googleClientId: string | null;
   googleClientSecret: string | null;
   githubClientId: string | null;

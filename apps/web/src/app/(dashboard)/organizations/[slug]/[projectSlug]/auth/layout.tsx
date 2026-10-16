@@ -10,7 +10,7 @@ export default async function AuthLayout({
   const { slug, projectSlug } = await params;
 
   return (
-    <div>
+    <div className="h-[calc(100dvh-(--spacing(14)))] flex flex-col -m-6 overflow-hidden">
       <ProjectAuthShell orgSlug={slug} projectSlug={projectSlug}>
         {children}
       </ProjectAuthShell>

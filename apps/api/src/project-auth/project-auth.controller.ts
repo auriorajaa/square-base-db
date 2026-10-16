@@ -76,7 +76,8 @@ export class ProjectAuthController {
       code,
     );
 
-    const webUrl = this.configService.get<string>("WEB_URL");
+    const webUrl =
+      await this.projectAuthService.getSiteUrlForProject(projectSlug);
 
     return res.redirect(`${webUrl}/?access_token=${result.accessToken}`);
   }
@@ -114,7 +115,8 @@ export class ProjectAuthController {
       code,
     );
 
-    const webUrl = this.configService.get<string>("WEB_URL");
+    const webUrl =
+      await this.projectAuthService.getSiteUrlForProject(projectSlug);
 
     return res.redirect(`${webUrl}/?access_token=${result.accessToken}`);
   }

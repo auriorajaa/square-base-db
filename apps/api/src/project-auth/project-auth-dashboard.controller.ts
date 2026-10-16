@@ -23,6 +23,7 @@ export class ProjectAuthDashboardController {
     @Param("projectSlug") projectSlug: string,
     @Body()
     settings: {
+      siteUrl?: string;
       googleClientId?: string;
       googleClientSecret?: string;
       githubClientId?: string;

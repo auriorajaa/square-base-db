@@ -17,6 +17,7 @@ export const projects = pgTable("projects", {
   githubClientId: text("github_client_id"),
   githubClientSecret: text("github_client_secret"),
   authJwtSecret: text("auth_jwt_secret").notNull(),
+  siteUrl: text("site_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

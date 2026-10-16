@@ -513,6 +513,7 @@ export class ProjectAuthService {
 
     // Return the OAuth settings for the project
     return {
+      siteUrl: project.siteUrl,
       googleClientId: project.googleClientId,
       googleClientSecret: project.googleClientSecret,
       githubClientId: project.githubClientId,
@@ -520,10 +521,24 @@ export class ProjectAuthService {
     };
   }
 
+  resolveSiteUrl(project: typeof projects.$inferSelect): string {
+    return (
+      project.siteUrl ??
+      this.configService.get<string>("WEB_URL") ??
+      "http://localhost:3000"
+    );
+  }
+
+  async getSiteUrlForProject(projectSlug: string): Promise<string> {
+    const project = await this.getProject(projectSlug);
+    return this.resolveSiteUrl(project);
+  }
+
   // Update OAuth settings for a project
   async updateOAuthSettings(
     projectSlug: string,
     settings: {
+      siteUrl?: string;
       googleClientId?: string;
       googleClientSecret?: string;
       githubClientId?: string;

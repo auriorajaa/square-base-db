@@ -13,7 +13,7 @@ export class SquareBaseDbClient {
     this.db = new SquareBaseDb(projectUrl, apiKey);
     this.storage = new SquareBaseDbStorage(projectUrl, apiKey);
     this.realtime = new SquareBaseDbRealtime(projectUrl, apiKey);
-    this.auth = new SquareBaseDbAuth(projectUrl, apiKey);
+    this.auth = new SquareBaseDbAuth(projectUrl);
   }
 
   from<T = Record<string, unknown>>(table: string) {

@@ -1,0 +1,24 @@
+import { retrieveOAuthFromApi } from "@/features/project-auth/project-auth-helpers.server";
+import { ProjectAuthUrlConfig } from "@/features/project-auth/project-auth-url-config";
+
+export default async function AuthUrlConfigurationPage({
+  params,
+}: {
+  params: Promise<{ slug: string; projectSlug: string }>;
+}) {
+  const { slug, projectSlug } = await params;
+  const apiBaseUrl =
+    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api";
+  const settings = await retrieveOAuthFromApi(slug, projectSlug);
+  const fallbackSiteUrl =
+    process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000";
+
+  return (
+    <ProjectAuthUrlConfig
+      orgSlug={slug}
+      projectSlug={projectSlug}
+      initialSiteUrl={settings.siteUrl ?? fallbackSiteUrl}
+      apiBaseUrl={apiBaseUrl}
+    />
+  );
+}
