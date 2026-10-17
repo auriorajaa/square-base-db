@@ -21,18 +21,28 @@ async function bootstrap() {
     }),
   );
 
-  // app.enableCors({
-  //   origin: process.env.WEB_URL ?? "http://localhost:3000",
-  //   credentials: true,
-  // });
-
   app.enableCors({
-    origin: [
-      process.env.WEB_URL ?? "http://localhost:3000",
-      /^http:\/\/localhost:\d+$/,
-    ],
+    origin: process.env.WEB_URL ?? "http://localhost:3000",
     credentials: true,
   });
+
+  // app.enableCors({
+  //   // @ts-ignore
+  //   origin: (origin, callback) => {
+  //     if (!origin) return callback(null, true);
+
+  //     const webUrl = process.env.WEB_URL ?? "http://localhost:3000";
+  //     if (origin === webUrl) return callback(null, true);
+
+  //     if (/^http:\/\/localhost(:\d+)?$/.test(origin)) {
+  //       return callback(null, true);
+  //     }
+
+  //     callback(new Error(`CORS blocked: ${origin}`));
+  //   },
+
+  //   credentials: true,
+  // });
 
   const port = process.env.PORT ?? 8080;
 

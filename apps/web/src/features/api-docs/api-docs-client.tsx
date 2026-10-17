@@ -223,7 +223,7 @@ export function ApiDocsClient({ docs }: { docs: ProjectApiDocs }) {
                   </span>
                 </div>
                 <code className="block truncate font-mono text-xs sm:text-sm text-foreground">
-                  {docs.projectUrl}/rest
+                  {docs.projectUrl}
                 </code>
               </div>
               <Button

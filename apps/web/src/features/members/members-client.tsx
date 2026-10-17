@@ -1,22 +1,39 @@
 "use client";
 
-import {useActionState, useState} from "react";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {OrgMemberWithUser, OrgRole} from "@square-base-db/types";
-import {ORG_ROLES} from "@square-base-db/constants";
-import {membersAction} from "@/features/members/action";
-import {Controller, useForm} from "react-hook-form";
-import {z} from "zod";
-import {inviteSchema} from "@/features/members/client.schema";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {MEMBERS_INTENT} from "@/features/members/constants";
-import {Avatar, AvatarFallback} from "@/components/ui/avatar";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Badge} from "@/components/ui/badge";
-import {Mail, Trash2, UserPlus} from "lucide-react";
+import { useActionState, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { OrgMemberWithUser, OrgRole } from "@square-base-db/types";
+import { ORG_ROLES } from "@square-base-db/constants";
+import { membersAction } from "@/features/members/action";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { inviteSchema } from "@/features/members/client.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { MEMBERS_INTENT } from "@/features/members/constants";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Mail, Trash2, UserPlus } from "lucide-react";
 
 interface MembersClientProps {
   slug: string;
@@ -29,11 +46,11 @@ interface MembersClientProps {
 // It uses local state to manage the selected role for the member
 // It conditionally renders role management controls and remove button based on admin status
 function MemberRow({
-                     member,
-                     isAdmin,
-                     isPending,
-                     formAction,
-                   }: {
+  member,
+  isAdmin,
+  isPending,
+  formAction,
+}: {
   member: OrgMemberWithUser;
   isAdmin: boolean;
   isPending: boolean;
@@ -64,13 +81,13 @@ function MemberRow({
       <div className="flex items-center gap-2 self-end sm:self-center">
         {isAdmin ? (
           <form action={formAction} className="flex items-center gap-2">
-            <input type="hidden" name="memberId" value={member.id}/>
-            <input type="hidden" name="role" value={role}/>
+            <input type="hidden" name="memberId" value={member.id} />
+            <input type="hidden" name="role" value={role} />
 
             {/* Controlled Select menggunakan value & onValueChange */}
             <Select value={role} onValueChange={(val) => val && setRole(val)}>
               <SelectTrigger className="h-8 text-xs w-28 bg-background">
-                <SelectValue/>
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={ORG_ROLES.ADMIN}>Admin</SelectItem>
@@ -91,7 +108,10 @@ function MemberRow({
             </Button>
           </form>
         ) : (
-          <Badge variant="secondary" className="capitalize font-normal text-xs px-2.5 py-0.5">
+          <Badge
+            variant="secondary"
+            className="capitalize font-normal text-xs px-2.5 py-0.5"
+          >
             {member.role}
           </Badge>
         )}
@@ -99,7 +119,7 @@ function MemberRow({
         {/* Remove Member Button */}
         {isAdmin && (
           <form action={formAction}>
-            <input type="hidden" name="memberId" value={member.id}/>
+            <input type="hidden" name="memberId" value={member.id} />
             <Button
               type="submit"
               name="intent"
@@ -110,7 +130,7 @@ function MemberRow({
               disabled={isPending}
               title="Remove member"
             >
-              <Trash2 className="size-4 sm:hidden"/>
+              <Trash2 className="size-4 sm:hidden" />
               <span className="hidden sm:inline">Remove</span>
             </Button>
           </form>
@@ -121,17 +141,17 @@ function MemberRow({
 }
 
 export function MembersClient({
-                                currentUserRole,
-                                members,
-                                slug,
-                              }: MembersClientProps) {
+  currentUserRole,
+  members,
+  slug,
+}: MembersClientProps) {
   const isAdmin = currentUserRole === ORG_ROLES.ADMIN;
-  const boundAction = membersAction.bind(null, {slug});
+  const boundAction = membersAction.bind(null, { slug });
   const [state, formAction, isPending] = useActionState(boundAction, {});
 
   const form = useForm<z.infer<typeof inviteSchema>>({
     resolver: zodResolver(inviteSchema),
-    defaultValues: {email: ""},
+    defaultValues: { email: "" },
   });
 
   return (
@@ -141,7 +161,7 @@ export function MembersClient({
         <Card className="border border-border bg-card rounded-xl">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base font-semibold tracking-tight flex items-center gap-2">
-              <UserPlus className="size-4 text-muted-foreground"/>
+              <UserPlus className="size-4 text-muted-foreground" />
               Invite a new member
             </CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
@@ -150,14 +170,12 @@ export function MembersClient({
           </CardHeader>
           <CardContent className="space-y-3">
             {state.error && (
-              <div
-                className="rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
+              <div className="rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
                 {state.error}
               </div>
             )}
             {state.success && (
-              <div
-                className="rounded-md border border-green-500/20 bg-green-500/10 px-3 py-2 text-xs font-medium text-green-600 dark:text-green-400">
+              <div className="rounded-md border border-green-500/20 bg-green-500/10 px-3 py-2 text-xs font-medium text-green-600 dark:text-green-400">
                 {state.success}
               </div>
             )}
@@ -166,7 +184,7 @@ export function MembersClient({
               action={formAction}
               noValidate
               onSubmitCapture={async (e) => {
-                const ok = await form.trigger(undefined, {shouldFocus: true});
+                const ok = await form.trigger(undefined, { shouldFocus: true });
                 if (!ok) e.preventDefault();
               }}
               className="flex flex-col sm:flex-row gap-3 items-start"
@@ -175,13 +193,16 @@ export function MembersClient({
                 <Controller
                   name="email"
                   control={form.control}
-                  render={({field, fieldState}) => (
-                    <Field data-invalid={fieldState.invalid} className="w-full space-y-1">
+                  render={({ field, fieldState }) => (
+                    <Field
+                      data-invalid={fieldState.invalid}
+                      className="w-full space-y-1"
+                    >
                       <FieldLabel htmlFor="invite-email" className="sr-only">
                         Email Address
                       </FieldLabel>
                       <div className="relative w-full">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"/>
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                         <Input
                           {...field}
                           id="invite-email"
@@ -192,7 +213,7 @@ export function MembersClient({
                         />
                       </div>
                       {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]}/>
+                        <FieldError errors={[fieldState.error]} />
                       )}
                     </Field>
                   )}
@@ -221,7 +242,9 @@ export function MembersClient({
               Organization Members
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground">
-              {members.length} {members.length === 1 ? "member has" : "members have"} access to this workspace.
+              {members.length}{" "}
+              {members.length === 1 ? "member has" : "members have"} access to
+              this workspace.
             </CardDescription>
           </div>
         </CardHeader>

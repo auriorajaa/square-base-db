@@ -33,7 +33,8 @@ export const TABLE_EDITOR_INTENT = {
   ADD_COLUMN: "ADD_COLUMN",
 } as const;
 
-export type TableEditorIntent = (typeof TABLE_EDITOR_INTENT)[keyof typeof TABLE_EDITOR_INTENT];
+export type TableEditorIntent =
+  (typeof TABLE_EDITOR_INTENT)[keyof typeof TABLE_EDITOR_INTENT];
 
 export const RESERVED_QUERY_PARAMS = new Set([
   "select",
@@ -62,3 +63,11 @@ export const REALTIME_EVENTS = {
   EVENT: "event",
   ERROR: "error",
 } as const;
+
+export const AUTH_PROVIDERS = {
+  EMAIL: "email",
+  GOOGLE: "google",
+  GITHUB: "github",
+} as const;
+
+export const MAGIC_LINK_EXPIRES_IN = "15m";

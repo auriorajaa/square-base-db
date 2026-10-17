@@ -1,0 +1,7 @@
+export default function OrganizationsListLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <div className="mx-auto w-full">{children}</div>;
+}

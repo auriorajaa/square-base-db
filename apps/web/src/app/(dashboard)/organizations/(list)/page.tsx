@@ -1,8 +1,8 @@
 import Link from "next/link";
-import {ArrowRight, Building2, FolderKanban, Plus, Users} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {Badge} from "@/components/ui/badge";
-import {retrieveMyOrganizationsFromApi} from "@/features/organization/organization-helpers.server";
+import { ArrowRight, Building2, FolderKanban, Plus, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { retrieveMyOrganizationsFromApi } from "@/features/organization/organization-helpers.server";
 
 export default async function OrganizationsPage() {
   const orgs = await retrieveMyOrganizationsFromApi();
@@ -27,7 +27,7 @@ export default async function OrganizationsPage() {
           className="h-9 gap-1.5 self-start text-xs font-medium sm:self-center"
           render={
             <Link href="/organizations/new">
-              <Plus className="size-4"/>
+              <Plus className="size-4" />
               <span>New Organization</span>
             </Link>
           }
@@ -36,10 +36,9 @@ export default async function OrganizationsPage() {
 
       {/* Empty state */}
       {orgs.length === 0 ? (
-        <div
-          className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card px-4 py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card px-4 py-20 text-center">
           <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-muted">
-            <Building2 className="size-6 text-muted-foreground"/>
+            <Building2 className="size-6 text-muted-foreground" />
           </div>
           <h3 className="text-base font-semibold text-foreground">
             No organizations yet
@@ -54,7 +53,7 @@ export default async function OrganizationsPage() {
             className="gap-1.5 text-xs font-medium"
             render={
               <Link href="/organizations/new">
-                <Plus className="size-4"/>
+                <Plus className="size-4" />
                 <span>Create Organization</span>
               </Link>
             }
@@ -86,29 +85,26 @@ export default async function OrganizationsPage() {
 
               {/* Name + slug */}
               <div className="min-w-0 space-y-0.5">
-
                 <p className="truncate font-mono text-xs text-muted-foreground">
                   {org.slug}
                 </p>
               </div>
 
               {/* Footer stats */}
-              <div
-                className="flex items-center justify-between border-t border-border/60 pt-3 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between border-t border-border/60 pt-3 text-xs text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1">
-                    <FolderKanban className="size-3.5"/>
+                    <FolderKanban className="size-3.5" />
                     {org.projectCount}{" "}
                     {org.projectCount === 1 ? "project" : "projects"}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Users className="size-3.5"/>
+                    <Users className="size-3.5" />
                     {org.memberCount}{" "}
                     {org.memberCount === 1 ? "member" : "members"}
                   </span>
                 </div>
-                <ArrowRight
-                  className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-primary"/>
+                <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-primary" />
               </div>
             </Link>
           ))}

@@ -1,0 +1,4 @@
+ALTER TABLE "projects" ADD COLUMN "google_client_id" text;--> statement-breakpoint
+ALTER TABLE "projects" ADD COLUMN "google_client_secret" text;--> statement-breakpoint
+ALTER TABLE "projects" ADD COLUMN "github_client_id" text;--> statement-breakpoint
+ALTER TABLE "projects" ADD COLUMN "github_client_secret" text;--> statement-breakpoint
