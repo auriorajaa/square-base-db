@@ -14,3 +14,4 @@ export { SquareBaseDbRealtime } from "./realtime";
 export type { RealtimeCallback } from "./realtime";
 export { SquareBaseDbStorage } from "./storage";
 export { SquareBaseDbAuth } from "./auth";
+export type { RealtimeEvent, RealtimeEventType, StorageObject } from "./types";

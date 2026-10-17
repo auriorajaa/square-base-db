@@ -2,6 +2,9 @@
   "name": "square-base-db-js",
   "version": "1.0.0",
   "description": "Official JavaScript client for Square Base DB. This package provides a simple and efficient way to interact with Square Base DB from JavaScript applications.",
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,19 +17,31 @@
   },
   "scripts": {
     "build": "tsdown",
-    "dev": "tsdown --watch"
+    "dev": "tsdown --watch",
+    "prepublishOnly": "tsdown"
   },
   "keywords": [],
   "author": "Aurio Rajaa",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auriorajaa/square-base-db.git",
+    "directory": "packages/square-base-db-js"
+  },
+  "homepage": "https://github.com/auriorajaa/square-base-db/tree/main/packages/square-base-db-js#readme",
+  "bugs": {
+    "url": "https://github.com/auriorajaa/square-base-db/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "dependencies": {
-    "@square-base-db/constants": "workspace:*",
     "socket.io-client": "^4.8.4",
     "uploadthing": "^7.7.4"
   },
   "devDependencies": {
-    "@square-base-db/types": "workspace:*",
+    "@square-base-db/constants": "workspace:*",
     "tsdown": "^0.23.1",
     "typescript": "^7.0.2"
   }

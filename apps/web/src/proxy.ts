@@ -45,7 +45,7 @@ export async function proxy(request: NextRequest) {
 
   let isValid = false;
   // Verify the access token if it exists and the secret is available
-  if (accessToken && process.env.JWT_ACCESS_TOKEN) {
+  if (accessToken && process.env.JWT_ACCESS_SECRET) {
     try {
       // Verify the access token using the secret key
       const secret = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET);

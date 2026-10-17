@@ -1,4 +1,4 @@
-import {RealtimeEvent} from "@square-base-db/types";
+import {RealtimeEvent} from "../types";
 import {io, Socket} from "socket.io-client";
 import {REALTIME_EVENTS} from "@square-base-db/constants";
 

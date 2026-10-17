@@ -1,4 +1,4 @@
-import { StorageObject } from "@square-base-db/types";
+import { StorageObject } from "../types";
 import { genUploader } from "uploadthing/client";
 
 type StorageUploadRouter = {

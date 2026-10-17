@@ -9,7 +9,6 @@ export default defineConfig({
   sourcemap: true,
   minify: false,
   deps: {
-    neverBundle: ["@square-base-db/types"],
     alwaysBundle: [
       "socket.io-client",
       "uploadthing/client",
